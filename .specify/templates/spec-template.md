@@ -1,116 +1,136 @@
-# Feature Specification: [FEATURE NAME]
+# Technical Specification Template
 
-**Feature Branch**: `[###-feature-name]`  
-**Created**: [DATE]  
-**Status**: Draft  
-**Input**: User description: "$ARGUMENTS"
+## Constitution Alignment
 
-## User Scenarios & Testing *(mandatory)*
+This specification MUST comply with LogosLMS constitution:
+- Multi-tenant architecture with strict RLS
+- WCAG AA accessibility standards
+- Supabase Auth integration
+- AI ethics and safety requirements
+- Performance and security standards
 
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
+## Feature Specification
 
-### User Story 1 - [Brief Title] (Priority: P1)
+**Feature Name:** [FEATURE_NAME]  
+**Version:** [VERSION]  
+**Priority:** [HIGH/MEDIUM/LOW]  
+**Estimated Effort:** [STORY_POINTS]
 
-[Describe this user journey in plain language]
+## Overview
 
-**Why this priority**: [Explain the value and why it has this priority level]
+[Brief description of the feature and its purpose within the LogosLMS ecosystem]
 
-**Independent Test**: [Describe how this can be tested independently - e.g., "Can be fully tested by [specific action] and delivers [specific value]"]
+## User Stories
 
-**Acceptance Scenarios**:
+### As a [USER_TYPE]
+- [ ] I want [FUNCTIONALITY] so that [BENEFIT]
+- [ ] I want [FUNCTIONALITY] so that [BENEFIT]
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+## Technical Requirements
 
----
+### Database Schema
+```sql
+-- [SCHEMA_DEFINITION]
+-- MUST include organization_id for multi-tenancy
+-- MUST include proper RLS policies
+```
 
-### User Story 2 - [Brief Title] (Priority: P2)
+### API Endpoints
+```typescript
+// [API_DEFINITION]
+// MUST include proper authentication
+// MUST include organization context
+```
 
-[Describe this user journey in plain language]
+### UI Components
+- [ ] [COMPONENT_1]: [DESCRIPTION]
+- [ ] [COMPONENT_2]: [DESCRIPTION]
+- [ ] [COMPONENT_3]: [DESCRIPTION]
 
-**Why this priority**: [Explain the value and why it has this priority level]
+## Multi-Tenancy Requirements
 
-**Independent Test**: [Describe how this can be tested independently]
+### Data Isolation
+- [ ] All queries MUST include organization_id filter
+- [ ] RLS policies MUST be implemented
+- [ ] Cross-tenant data access MUST be prevented
 
-**Acceptance Scenarios**:
+### User Context
+- [ ] JWT MUST include organization_id
+- [ ] Session MUST track active organization
+- [ ] Organization switching MUST be supported
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+## Security Requirements
 
----
+### Authentication
+- [ ] Supabase Auth integration
+- [ ] Role-based access control
+- [ ] Session management
 
-### User Story 3 - [Brief Title] (Priority: P3)
+### Data Protection
+- [ ] All sensitive data encrypted
+- [ ] Audit logging implemented
+- [ ] Privacy controls in place
 
-[Describe this user journey in plain language]
+## Accessibility Requirements
 
-**Why this priority**: [Explain the value and why it has this priority level]
+### WCAG AA Compliance
+- [ ] Keyboard navigation support
+- [ ] Screen reader compatibility
+- [ ] Color contrast compliance
+- [ ] Scalable text support
 
-**Independent Test**: [Describe how this can be tested independently]
+### User Experience
+- [ ] Elder-friendly design
+- [ ] Clear focus indicators
+- [ ] Intuitive navigation
 
-**Acceptance Scenarios**:
+## AI Integration (if applicable)
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+### AI Features
+- [ ] Human-in-the-loop validation
+- [ ] Clear AI-generated content labeling
+- [ ] Organization-level opt-in controls
 
----
+### Safety Measures
+- [ ] Content appropriateness checks
+- [ ] Bias detection and mitigation
+- [ ] Transparent AI decision making
 
-[Add more user stories as needed, each with an assigned priority]
+## Performance Requirements
 
-### Edge Cases
+### Metrics
+- [ ] Lighthouse score ≥ 90
+- [ ] Page load time < 2s
+- [ ] Database query time < 100ms
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
+### Optimization
+- [ ] Proper caching strategies
+- [ ] Database indexing
+- [ ] Code splitting
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+## Testing Requirements
 
-## Requirements *(mandatory)*
+### Unit Tests
+- [ ] Component testing
+- [ ] Utility function testing
+- [ ] API endpoint testing
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
+### Integration Tests
+- [ ] Multi-tenant data isolation
+- [ ] Authentication flows
+- [ ] Cross-browser compatibility
 
-### Functional Requirements
+### Accessibility Tests
+- [ ] Screen reader testing
+- [ ] Keyboard navigation testing
+- [ ] Color contrast validation
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+## Definition of Done
 
-*Example of marking unclear requirements:*
-
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
-
-### Key Entities *(include if feature involves data)*
-
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
-
-## Success Criteria *(mandatory)*
-
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
-
-### Measurable Outcomes
-
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
-
+- [ ] All user stories completed
+- [ ] Security review passed
+- [ ] Accessibility review passed
+- [ ] Performance requirements met
+- [ ] Tests written and passing
+- [ ] Documentation updated
+- [ ] Code review approved
