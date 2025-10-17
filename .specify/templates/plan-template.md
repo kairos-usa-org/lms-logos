@@ -1,105 +1,92 @@
-# Implementation Plan: [FEATURE]
-
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
-
-## Summary
-
-[Extract from feature spec: primary requirement + technical approach from research]
-
-## Technical Context
-
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+# Project Plan Template
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+This plan MUST align with LogosLMS constitution principles:
+- [ ] Accessibility & UX (WCAG AA compliance)
+- [ ] Data Security & Privacy (Supabase Auth + RLS)
+- [ ] Architecture & Tech Stack (Next.js 15, TypeScript, Tailwind v4)
+- [ ] Performance Standards (Lighthouse ≥ 90)
+- [ ] Multi-Tenancy (organization_id, RLS, tenant isolation)
+- [ ] AI Ethics & Safety (human-in-the-loop, labeling, opt-in)
+- [ ] Gamification Fairness (anti-gaming measures)
+- [ ] Onboarding & Accounts (super-admin, self-service)
+- [ ] Documentation & QA (current docs, DoD, reviews)
+- [ ] Scope Control (MVP focus)
 
-[Gates determined based on constitution file]
+## Project Overview
 
-## Project Structure
+**Project Name:** [PROJECT_NAME]  
+**Version:** [VERSION]  
+**Timeline:** [START_DATE] - [END_DATE]  
+**Team:** [TEAM_MEMBERS]
 
-### Documentation (this feature)
+## Objectives
 
-```
-specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
-```
+### Primary Goals
+- [ ] [GOAL_1]
+- [ ] [GOAL_2]
+- [ ] [GOAL_3]
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Success Metrics
+- [ ] [METRIC_1]: [TARGET_VALUE]
+- [ ] [METRIC_2]: [TARGET_VALUE]
+- [ ] [METRIC_3]: [TARGET_VALUE]
 
-```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+## Technical Requirements
 
-tests/
-├── contract/
-├── integration/
-└── unit/
+### Architecture
+- [ ] Multi-tenant architecture with organization_id
+- [ ] Supabase Auth with RLS policies
+- [ ] Next.js 15 App Router implementation
+- [ ] TypeScript strict mode
+- [ ] Tailwind CSS v4 styling
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+### Security
+- [ ] All data access through RLS
+- [ ] No client secrets exposure
+- [ ] Audit logging for admin actions
+- [ ] Privacy-by-default implementation
 
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
+### Performance
+- [ ] Lighthouse score ≥ 90
+- [ ] Cross-tenant cache isolation
+- [ ] Optimized database queries
+- [ ] WCAG AA compliance
 
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
+## Implementation Phases
 
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
-```
+### Phase 1: Foundation
+- [ ] [TASK_1]
+- [ ] [TASK_2]
+- [ ] [TASK_3]
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+### Phase 2: Core Features
+- [ ] [TASK_1]
+- [ ] [TASK_2]
+- [ ] [TASK_3]
 
-## Complexity Tracking
+### Phase 3: AI & Gamification
+- [ ] [TASK_1]
+- [ ] [TASK_2]
+- [ ] [TASK_3]
 
-*Fill ONLY if Constitution Check has violations that must be justified*
+## Risk Assessment
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+### High Risk
+- [ ] [RISK_1]: [MITIGATION_STRATEGY]
+- [ ] [RISK_2]: [MITIGATION_STRATEGY]
 
+### Medium Risk
+- [ ] [RISK_1]: [MITIGATION_STRATEGY]
+- [ ] [RISK_2]: [MITIGATION_STRATEGY]
+
+## Definition of Done
+
+Each feature MUST include:
+- [ ] Security review completed
+- [ ] Accessibility review completed
+- [ ] Performance testing passed
+- [ ] Documentation updated
+- [ ] Code review approved
+- [ ] Tests written and passing
