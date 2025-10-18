@@ -1,31 +1,26 @@
 openapi: 3.0.3
 info:
   title: LogosLMS API
-  description: Multi-tenant Learning Management System API
+  description: Multi-tenant Learning Management System for Christian Education Organizations
   version: 1.0.0
   contact:
     name: LogosLMS Team
     email: support@logoslms.com
-
 servers:
   - url: https://api.logoslms.com/v1
     description: Production server
-  - url: http://localhost:3000/api/v1
-    description: Development server
+  - url: https://staging-api.logoslms.com/v1
+    description: Staging server
 
 security:
   - BearerAuth: []
-  - ApiKeyAuth: []
 
 paths:
-  # Authentication Endpoints
+  # Authentication endpoints
   /auth/register:
     post:
-      tags:
-        - Authentication
+      tags: [Authentication]
       summary: Register new user
-      description: Register a new user account
-      security: []
       requestBody:
         required: true
         content:
@@ -38,19 +33,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/User'
         '400':
-          description: Invalid request data
+          $ref: '#/components/responses/BadRequest'
         '409':
-          description: Email already exists
+          $ref: '#/components/responses/Conflict'
 
   /auth/login:
     post:
-      tags:
-        - Authentication
+      tags: [Authentication]
       summary: Login user
-      description: Authenticate user and return JWT token
-      security: []
       requestBody:
         required: true
         content:
@@ -65,43 +57,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Invalid credentials
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout user
+      responses:
+        '200':
+          description: Logout successful
 
   /auth/me:
     get:
-      tags:
-        - Authentication
+      tags: [Authentication]
       summary: Get current user
-      description: Get current authenticated user information
       responses:
         '200':
-          description: User information retrieved
+          description: Current user information
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
-  # Organization Management (Super Admin)
+  # Organization management (super-admin only)
   /organizations:
     get:
-      tags:
-        - Organizations
-      summary: List organizations
-      description: Get list of all organizations (super admin only)
+      tags: [Organizations]
+      summary: List all organizations (super-admin only)
+      security:
+        - BearerAuth: []
       responses:
         '200':
-          description: Organizations retrieved
+          description: List of organizations
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Organization'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
     post:
-      tags:
-        - Organizations
-      summary: Create organization
-      description: Create a new organization (super admin only)
+      tags: [Organizations]
+      summary: Create new organization (super-admin only)
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -110,18 +113,20 @@ paths:
               $ref: '#/components/schemas/CreateOrganizationRequest'
       responses:
         '201':
-          description: Organization created
+          description: Organization created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /organizations/{id}:
     get:
-      tags:
-        - Organizations
-      summary: Get organization
-      description: Get organization details
+      tags: [Organizations]
+      summary: Get organization by ID
       parameters:
         - name: id
           in: path
@@ -131,16 +136,17 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Organization retrieved
+          description: Organization details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
     put:
-      tags:
-        - Organizations
+      tags: [Organizations]
       summary: Update organization
-      description: Update organization details
       parameters:
         - name: id
           in: path
@@ -156,42 +162,21 @@ paths:
               $ref: '#/components/schemas/UpdateOrganizationRequest'
       responses:
         '200':
-          description: Organization updated
+          description: Organization updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  # User Management
-  /organizations/{id}/users:
-    get:
-      tags:
-        - Users
-      summary: List organization users
-      description: Get users in organization
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Users retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-
+  # User invitation and management
   /organizations/{id}/invite:
     post:
-      tags:
-        - Users
+      tags: [Users]
       summary: Invite user to organization
-      description: Send invitation email to user
       parameters:
         - name: id
           in: path
@@ -207,18 +192,41 @@ paths:
               $ref: '#/components/schemas/InviteUserRequest'
       responses:
         '201':
-          description: Invitation sent
+          description: User invited successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Invitation'
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /organizations/{id}/users:
+    get:
+      tags: [Users]
+      summary: List organization users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of organization users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
 
   /users/{id}/profile:
     put:
-      tags:
-        - Users
+      tags: [Users]
       summary: Update user profile
-      description: Update user profile information
       parameters:
         - name: id
           in: path
@@ -234,33 +242,59 @@ paths:
               $ref: '#/components/schemas/UpdateProfileRequest'
       responses:
         '200':
-          description: Profile updated
+          description: Profile updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  # Course Management
-  /courses:
-    get:
-      tags:
-        - Courses
-      summary: List courses
-      description: Get courses in current organization
+  /users/{id}/password:
+    put:
+      tags: [Users]
+      summary: Update user password
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
       responses:
         '200':
-          description: Courses retrieved
+          description: Password updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Course and content management
+  /courses:
+    get:
+      tags: [Courses]
+      summary: List courses
+      responses:
+        '200':
+          description: List of courses
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Course'
+
     post:
-      tags:
-        - Courses
-      summary: Create course
-      description: Create a new course
+      tags: [Courses]
+      summary: Create new course
       requestBody:
         required: true
         content:
@@ -269,18 +303,18 @@ paths:
               $ref: '#/components/schemas/CreateCourseRequest'
       responses:
         '201':
-          description: Course created
+          description: Course created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
   /courses/{id}:
     get:
-      tags:
-        - Courses
-      summary: Get course
-      description: Get course details
+      tags: [Courses]
+      summary: Get course by ID
       parameters:
         - name: id
           in: path
@@ -290,16 +324,17 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Course retrieved
+          description: Course details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
     put:
-      tags:
-        - Courses
+      tags: [Courses]
       summary: Update course
-      description: Update course details
       parameters:
         - name: id
           in: path
@@ -315,19 +350,19 @@ paths:
               $ref: '#/components/schemas/UpdateCourseRequest'
       responses:
         '200':
-          description: Course updated
+          description: Course updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  # Enrollment Management
-  /courses/{id}/enroll:
-    post:
-      tags:
-        - Enrollments
-      summary: Enroll in course
-      description: Enroll current user in course
+    delete:
+      tags: [Courses]
+      summary: Delete course
       parameters:
         - name: id
           in: path
@@ -336,94 +371,140 @@ paths:
             type: string
             format: uuid
       responses:
-        '201':
-          description: Enrollment created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Enrollment'
+        '204':
+          description: Course deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /enrollments:
-    get:
-      tags:
-        - Enrollments
-      summary: List user enrollments
-      description: Get current user's enrollments
-      responses:
-        '200':
-          description: Enrollments retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Enrollment'
-
-  # AI Coaching
+  # AI coaching endpoints
   /ai/coach/analyze:
     post:
-      tags:
-        - AI Coaching
-      summary: Analyze learning progress
-      description: Get AI analysis of user's learning progress
+      tags: [AI]
+      summary: Analyze learner progress
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnalyzeProgressRequest'
+              $ref: '#/components/schemas/AIAnalyzeRequest'
       responses:
         '200':
           description: Analysis completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProgressAnalysis'
+                $ref: '#/components/schemas/AIAnalyzeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
   /ai/coach/suggest:
     post:
-      tags:
-        - AI Coaching
+      tags: [AI]
       summary: Get learning suggestions
-      description: Get personalized learning suggestions
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SuggestRequest'
+              $ref: '#/components/schemas/AISuggestRequest'
       responses:
         '200':
           description: Suggestions generated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LearningSuggestions'
+                $ref: '#/components/schemas/AISuggestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
-  # Gamification
-  /gamification/leaderboard:
-    get:
-      tags:
-        - Gamification
-      summary: Get leaderboard
-      description: Get organization leaderboard
+  /ai/content/generate:
+    post:
+      tags: [AI]
+      summary: Generate AI content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGenerateRequest'
+      responses:
+        '201':
+          description: Content generated and pending approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /ai/content/{id}/approve:
+    post:
+      tags: [AI]
+      summary: Approve AI content
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
-          description: Leaderboard retrieved
+          description: Content approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /ai/content/{id}/reject:
+    post:
+      tags: [AI]
+      summary: Reject AI content
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIRejectRequest'
+      responses:
+        '200':
+          description: Content rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Motivation system endpoints
+  /motivation/leaderboard:
+    get:
+      tags: [Motivation]
+      summary: Get organization leaderboard
+      responses:
+        '200':
+          description: Leaderboard data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Leaderboard'
 
-  /gamification/badges:
+  /motivation/badges:
     get:
-      tags:
-        - Gamification
-      summary: Get user badges
-      description: Get current user's badges
+      tags: [Motivation]
+      summary: Get available badges
       responses:
         '200':
-          description: Badges retrieved
+          description: List of badges
           content:
             application/json:
               schema:
@@ -431,42 +512,52 @@ paths:
                 items:
                   $ref: '#/components/schemas/Badge'
 
+  /motivation/points:
+    post:
+      tags: [Motivation]
+      summary: Award points to user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AwardPointsRequest'
+      responses:
+        '200':
+          description: Points awarded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key
 
   schemas:
-    # Authentication Schemas
+    # Authentication schemas
     RegisterRequest:
       type: object
-      required:
-        - email
-        - password
-        - name
+      required: [email, password, role]
       properties:
         email:
           type: string
           format: email
         password:
           type: string
-          minLength: 6
-        name:
+          minLength: 8
+        role:
           type: string
-          minLength: 2
-          maxLength: 100
+          enum: [org_admin, mentor, learner]
+        profile_data:
+          type: object
 
     LoginRequest:
       type: object
-      required:
-        - email
-        - password
+      required: [email, password]
       properties:
         email:
           type: string
@@ -481,10 +572,11 @@ components:
           $ref: '#/components/schemas/User'
         token:
           type: string
-        refreshToken:
+        expires_at:
           type: string
+          format: date-time
 
-    # User Schemas
+    # Core entity schemas
     User:
       type: object
       properties:
@@ -502,12 +594,6 @@ components:
           enum: [super_admin, org_admin, mentor, learner]
         profile_data:
           type: object
-          properties:
-            name:
-              type: string
-            avatar:
-              type: string
-              format: uri
         points:
           type: integer
           minimum: 0
@@ -522,7 +608,6 @@ components:
           type: string
           format: date-time
 
-    # Organization Schemas
     Organization:
       type: object
       properties:
@@ -533,13 +618,9 @@ components:
           type: string
         slug:
           type: string
-        domain:
-          type: string
         branding_config:
           type: object
         theme_config:
-          type: object
-        settings:
           type: object
         created_at:
           type: string
@@ -548,42 +629,6 @@ components:
           type: string
           format: date-time
 
-    CreateOrganizationRequest:
-      type: object
-      required:
-        - name
-        - slug
-      properties:
-        name:
-          type: string
-          minLength: 2
-          maxLength: 100
-        slug:
-          type: string
-          minLength: 3
-          maxLength: 50
-        domain:
-          type: string
-        branding_config:
-          type: object
-        theme_config:
-          type: object
-
-    UpdateOrganizationRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 2
-          maxLength: 100
-        branding_config:
-          type: object
-        theme_config:
-          type: object
-        settings:
-          type: object
-
-    # Course Schemas
     Course:
       type: object
       properties:
@@ -599,12 +644,12 @@ components:
           type: string
         content:
           type: object
-        status:
-          type: string
-          enum: [draft, published, archived]
         created_by:
           type: string
           format: uuid
+        status:
+          type: string
+          enum: [draft, published, archived]
         created_at:
           type: string
           format: date-time
@@ -612,65 +657,33 @@ components:
           type: string
           format: date-time
 
-    CreateCourseRequest:
+    # Request/Response schemas
+    CreateOrganizationRequest:
       type: object
-      required:
-        - title
+      required: [name, slug]
       properties:
-        title:
+        name:
           type: string
-          minLength: 3
-          maxLength: 200
-        description:
+        slug:
           type: string
-          maxLength: 1000
-        content:
+        branding_config:
+          type: object
+        theme_config:
           type: object
 
-    UpdateCourseRequest:
+    UpdateOrganizationRequest:
       type: object
       properties:
-        title:
+        name:
           type: string
-          minLength: 3
-          maxLength: 200
-        description:
-          type: string
-          maxLength: 1000
-        content:
+        branding_config:
           type: object
-        status:
-          type: string
-          enum: [draft, published, archived]
-
-    # Enrollment Schemas
-    Enrollment:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        user_id:
-          type: string
-          format: uuid
-        course_id:
-          type: string
-          format: uuid
-        enrolled_at:
-          type: string
-          format: date-time
-        completed_at:
-          type: string
-          format: date-time
-        progress:
+        theme_config:
           type: object
 
-    # Invitation Schemas
     InviteUserRequest:
       type: object
-      required:
-        - email
-        - role
+      required: [email, role]
       properties:
         email:
           type: string
@@ -679,34 +692,50 @@ components:
           type: string
           enum: [org_admin, mentor, learner]
 
-    Invitation:
+    UpdateProfileRequest:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        organization_id:
-          type: string
-          format: uuid
-        email:
-          type: string
-          format: email
-        role:
-          type: string
-        token:
-          type: string
-        expires_at:
-          type: string
-          format: date-time
-        created_at:
-          type: string
-          format: date-time
+        profile_data:
+          type: object
 
-    # AI Coaching Schemas
-    AnalyzeProgressRequest:
+    UpdatePasswordRequest:
       type: object
-      required:
-        - user_id
+      required: [current_password, new_password]
+      properties:
+        current_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+
+    CreateCourseRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: object
+
+    UpdateCourseRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: object
+        status:
+          type: string
+          enum: [draft, published, archived]
+
+    # AI schemas
+    AIAnalyzeRequest:
+      type: object
+      required: [user_id, course_id]
       properties:
         user_id:
           type: string
@@ -715,30 +744,19 @@ components:
           type: string
           format: uuid
 
-    ProgressAnalysis:
+    AIAnalyzeResponse:
       type: object
       properties:
-        strengths:
-          type: array
-          items:
-            type: string
-        weaknesses:
-          type: array
-          items:
-            type: string
+        analysis:
+          type: string
         recommendations:
           type: array
           items:
             type: string
-        confidence_score:
-          type: number
-          minimum: 0
-          maximum: 1
 
-    SuggestRequest:
+    AISuggestRequest:
       type: object
-      required:
-        - user_id
+      required: [user_id, context]
       properties:
         user_id:
           type: string
@@ -746,23 +764,55 @@ components:
         context:
           type: string
 
-    LearningSuggestions:
+    AISuggestResponse:
       type: object
       properties:
-        next_lessons:
-          type: array
-          items:
-            type: string
-        study_techniques:
-          type: array
-          items:
-            type: string
-        resources:
+        suggestions:
           type: array
           items:
             type: string
 
-    # Gamification Schemas
+    AIGenerateRequest:
+      type: object
+      required: [content_type, prompt]
+      properties:
+        content_type:
+          type: string
+          enum: [lesson, quiz, course_description]
+        prompt:
+          type: string
+        course_id:
+          type: string
+          format: uuid
+
+    AIContent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        organization_id:
+          type: string
+          format: uuid
+        content_type:
+          type: string
+        content_data:
+          type: object
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        created_at:
+          type: string
+          format: date-time
+
+    AIRejectRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+
+    # Motivation system schemas
     Leaderboard:
       type: object
       properties:
@@ -780,8 +830,6 @@ components:
                 type: integer
               level:
                 type: integer
-              rank:
-                type: integer
 
     Badge:
       type: object
@@ -793,13 +841,27 @@ components:
           type: string
         description:
           type: string
-        icon:
+        icon_url:
           type: string
-        earned_at:
-          type: string
-          format: date-time
+        level:
+          type: integer
+          minimum: 1
+          maximum: 10
 
-    # Error Schemas
+    AwardPointsRequest:
+      type: object
+      required: [user_id, points, reason]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        points:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+
+    # Error schemas
     Error:
       type: object
       properties:
@@ -809,3 +871,39 @@ components:
           type: string
         details:
           type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

@@ -2,7 +2,7 @@
 
 ## Constitution Alignment
 
-This specification MUST comply with LogosLMS constitution:
+This specification MUST comply with LogosLMS constitution (see `.specify/memory/constitution.md`):
 - Multi-tenant architecture with strict RLS
 - WCAG AA accessibility standards
 - Supabase Auth integration
@@ -15,6 +15,17 @@ This specification MUST comply with LogosLMS constitution:
 **Version:** 1.0  
 **Priority:** HIGH  
 **Estimated Effort:** 50
+
+## Clarifications
+
+### Session 2024-12-19
+- Q: AI Provider Architecture → A: Abstract AI service interface with provider-specific implementations (OpenAI, Anthropic, local models)
+- Q: Motivation System Anti-Gaming Measures → A: No anti-gaming measures (trust-based motivation system)
+- Q: Cache Key Strategy for Multi-Tenancy → A: Organization-specific cache keys: `{organization_id}:{resource_type}:{resource_id}`
+- Q: Performance Monitoring Strategy → A: Basic Lighthouse monitoring only
+- Q: AI Content Approval Workflow → A: Formal approval workflow: AI content → instructor review → approval/rejection → publish
+- Q: External Service Failure Handling → A: Graceful degradation with user notification (show "AI features temporarily unavailable")
+- Q: Rate Limiting and Conflict Resolution → A: 100 requests per user per hour with optimistic locking (detect conflicts, show diff)
 
 ## Overview
 
@@ -44,7 +55,7 @@ LogosLMS is a comprehensive Learning Management System designed for Christian ed
 - [ ] I want to enroll in courses so that I can access educational content
 - [ ] I want to study lessons and take quizzes so that I can learn and be assessed
 - [ ] I want to receive AI coaching so that I can get personalized learning support
-- [ ] I want to earn points and badges so that I can track my progress and achievements
+- [ ] I want to earn points and badges through the motivation system so that I can track my progress and achievements
 - [ ] I want to manage my own profile and password so that I can maintain my account security
 
 ## Technical Requirements
@@ -135,22 +146,79 @@ DELETE /api/courses/:id
 POST /api/ai/coach/analyze
 POST /api/ai/coach/suggest
 POST /api/ai/content/generate
+POST /api/ai/content/approve
+POST /api/ai/content/reject
 
-// Gamification endpoints
-GET /api/gamification/leaderboard
-GET /api/gamification/badges
-POST /api/gamification/points
+// Motivation system endpoints
+GET /api/motivation/leaderboard
+GET /api/motivation/badges
+POST /api/motivation/points
 ```
 
 ### UI Components
-- [ ] **OrganizationSetupWizard**: Multi-step wizard for super-admin to create first organization
-- [ ] **UserInvitationForm**: Email-based invitation system for org admins
-- [ ] **ProfileManagement**: Self-service profile and password management
-- [ ] **CourseBuilder**: Drag-and-drop course creation interface
-- [ ] **AICoachingPanel**: Interactive AI coaching interface
-- [ ] **GamificationDashboard**: Points, badges, and leaderboard display
-- [ ] **MultiTenantSwitcher**: Organization context switching
-- [ ] **RoleBasedNavigation**: Dynamic navigation based on user role
+
+#### OrganizationSetupWizard
+**Purpose**: Multi-step wizard for super-admin to create first organization
+**Props**: `onComplete: (orgData: OrganizationData) => void`
+**Steps**: 1) Organization details, 2) Admin user creation, 3) Branding setup, 4) Confirmation
+**Validation**: Required fields, unique slug validation, email format validation
+**Accessibility**: WCAG AA compliant with keyboard navigation and screen reader support
+
+#### UserInvitationForm
+**Purpose**: Email-based invitation system for org admins
+**Props**: `organizationId: string, onInvite: (invitation: InvitationData) => Promise<void>`
+**Features**: Role selection (mentor/learner/admin), email validation, bulk invitation support
+**Validation**: Email format, role validation, duplicate invitation prevention
+**Accessibility**: Clear form labels, error messaging, keyboard navigation
+
+#### ProfileManagement
+**Purpose**: Self-service profile and password management
+**Props**: `userId: string, onUpdate: (profile: ProfileData) => Promise<void>`
+**Sections**: Personal info, contact details, password change, preferences
+**Validation**: Email uniqueness, password strength, required field validation
+**Accessibility**: Form validation with clear error messages, keyboard navigation
+
+#### CourseBuilder
+**Purpose**: Drag-and-drop course creation interface
+**Props**: `courseId?: string, onSave: (course: CourseData) => Promise<void>`
+**Features**: Lesson ordering, content blocks, quiz integration, preview mode
+**Validation**: Course structure validation, content requirements
+**Accessibility**: Drag-and-drop with keyboard alternatives, screen reader announcements
+
+#### AICoachingPanel
+**Purpose**: Interactive AI coaching interface for learners
+**Props**: `userId: string, courseId: string, onCoachingRequest: (request: CoachingRequest) => Promise<CoachingResponse>`
+**Features**: Chat interface, learning suggestions, progress analysis
+**Validation**: Input sanitization, rate limiting
+**Accessibility**: Chat interface with proper ARIA labels, keyboard navigation
+
+#### MotivationDashboard
+**Purpose**: Points, badges, and leaderboard display
+**Props**: `userId: string, organizationId: string`
+**Features**: Points display, badge showcase, leaderboard, progress visualization
+**Validation**: Data integrity, permission checks
+**Accessibility**: High contrast mode, scalable text, screen reader support
+
+#### AIContentApproval
+**Purpose**: Instructor review interface for AI-generated content
+**Props**: `contentId: string, onApprove: (content: ContentData) => Promise<void>, onReject: (reason: string) => Promise<void>`
+**Features**: Content preview, approval/rejection actions, feedback collection
+**Validation**: Content validation, approval workflow
+**Accessibility**: Clear action buttons, confirmation dialogs
+
+#### MultiTenantSwitcher
+**Purpose**: Organization context switching
+**Props**: `currentOrgId: string, availableOrgs: Organization[], onSwitch: (orgId: string) => void`
+**Features**: Organization list, current context display, switching confirmation
+**Validation**: Organization access validation
+**Accessibility**: Clear organization identification, keyboard navigation
+
+#### RoleBasedNavigation
+**Purpose**: Dynamic navigation based on user role
+**Props**: `userRole: UserRole, organizationId: string`
+**Features**: Role-specific menu items, conditional navigation, breadcrumbs
+**Validation**: Role-based access control
+**Accessibility**: Consistent navigation structure, keyboard navigation
 
 ## Multi-Tenancy Requirements
 
@@ -159,6 +227,7 @@ POST /api/gamification/points
 - [ ] RLS policies MUST be implemented for all tables
 - [ ] Cross-tenant data access MUST be prevented
 - [ ] Organization context MUST be maintained in all API calls
+- [ ] Cache keys MUST use organization-specific format: `{organization_id}:{resource_type}:{resource_id}`
 
 ### User Context
 - [ ] JWT MUST include organization_id
@@ -176,9 +245,43 @@ POST /api/gamification/points
 
 ### Data Protection
 - [ ] All sensitive data encrypted at rest
-- [ ] Audit logging implemented for all user actions
+- [ ] Comprehensive audit logging for all user actions (see Audit Logging Requirements below)
 - [ ] Privacy controls in place for user data
 - [ ] GDPR compliance for data handling
+
+### Audit Logging Requirements
+
+#### Logged Actions
+- [ ] **Authentication Events**: Login, logout, password changes, account creation
+- [ ] **Authorization Events**: Role changes, permission grants/revokes, organization access
+- [ ] **Data Access Events**: Database queries, file access, API calls
+- [ ] **Administrative Actions**: Organization creation, user invitations, content approval
+- [ ] **AI Interactions**: Content generation requests, approval decisions, coaching sessions
+- [ ] **Security Events**: Failed login attempts, suspicious activity, policy violations
+
+#### Log Data Structure
+```typescript
+interface AuditLog {
+  id: string;
+  timestamp: Date;
+  userId: string;
+  organizationId: string;
+  action: string;
+  resourceType: string;
+  resourceId?: string;
+  details: Record<string, any>;
+  ipAddress: string;
+  userAgent: string;
+  outcome: 'success' | 'failure' | 'error';
+}
+```
+
+#### Implementation Requirements
+- [ ] **Immutable Logs**: Audit logs cannot be modified or deleted
+- [ ] **Retention Policy**: 7 years for compliance requirements
+- [ ] **Access Control**: Only super-admins can view audit logs
+- [ ] **Performance**: Logging must not impact application performance
+- [ ] **Privacy**: Sensitive data must be masked in logs
 
 ## Accessibility Requirements
 
@@ -196,32 +299,110 @@ POST /api/gamification/points
 
 ## AI Integration
 
+### AI Service Architecture
+
+#### Abstract AI Service Interface
+```typescript
+interface AIService {
+  // Content Generation
+  generateContent(request: ContentGenerationRequest): Promise<ContentGenerationResponse>;
+  
+  // Coaching and Learning Support
+  provideCoaching(request: CoachingRequest): Promise<CoachingResponse>;
+  
+  // Content Analysis
+  analyzeContent(content: string): Promise<ContentAnalysis>;
+  
+  // Safety and Validation
+  validateContent(content: string): Promise<ContentValidation>;
+}
+
+interface ContentGenerationRequest {
+  type: 'lesson' | 'quiz' | 'assignment' | 'explanation';
+  topic: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  context: string;
+  organizationId: string;
+  userId: string;
+}
+
+interface CoachingRequest {
+  learnerId: string;
+  courseId: string;
+  currentLesson: string;
+  question: string;
+  learningStyle: 'visual' | 'auditory' | 'kinesthetic' | 'reading';
+  organizationId: string;
+}
+```
+
+#### Provider Implementations
+- [ ] **OpenAI Provider**: GPT-4 integration with custom prompts for Christian education
+- [ ] **Anthropic Provider**: Claude integration with constitutional AI principles
+- [ ] **Local Model Provider**: On-premises model support for sensitive organizations
+- [ ] **Provider Switching**: Runtime provider selection based on organization preferences
+
 ### AI Features
-- [ ] Human-in-the-loop validation for all AI-generated content
-- [ ] Clear AI-generated content labeling
-- [ ] Organization-level opt-in controls for AI features
-- [ ] Personalized adaptive learning paths
-- [ ] Socratic coaching methodology implementation
+- [ ] **Content Generation**: AI-assisted creation of lessons, quizzes, and assignments
+- [ ] **Coaching System**: Personalized learning support with Socratic methodology
+- [ ] **Content Analysis**: Automated content quality and appropriateness assessment
+- [ ] **Adaptive Learning**: Dynamic learning path adjustment based on progress
+- [ ] **Content Labeling**: Clear identification of AI-generated vs human-created content
+
+### Human-in-the-Loop Workflow
+- [ ] **Content Generation**: AI creates content → Instructor reviews → Approve/Reject/Modify → Publish
+- [ ] **Coaching Responses**: AI generates suggestions → Instructor can review → Learner receives response
+- [ ] **Content Analysis**: AI analyzes content → Instructor reviews analysis → Accept/Override decision
+- [ ] **Approval Interface**: Dedicated UI for instructors to review and approve AI-generated content
 
 ### Safety Measures
-- [ ] Content appropriateness checks for Christian education context
-- [ ] Bias detection and mitigation in AI responses
-- [ ] Transparent AI decision making with explanations
-- [ ] Instructor approval required for all AI-generated educational content
+- [ ] **Content Appropriateness**: Christian education context validation
+- [ ] **Bias Detection**: Automated bias detection and mitigation in AI responses
+- [ ] **Transparency**: Clear explanations for AI decisions and recommendations
+- [ ] **Rate Limiting**: Prevent AI service abuse and ensure fair usage
+- [ ] **Content Filtering**: Inappropriate content detection and blocking
+- [ ] **Audit Trail**: All AI interactions logged for review and improvement
+
+### Organization Controls
+- [ ] **AI Feature Toggle**: Organization-level enable/disable for AI features
+- [ ] **Provider Selection**: Choose AI provider based on organization preferences
+- [ ] **Content Approval**: Require instructor approval for all AI-generated content
+- [ ] **Usage Monitoring**: Track AI usage and costs per organization
+
+### External Service Failure Handling
+- [ ] **Graceful Degradation**: When AI services are unavailable, show "AI features temporarily unavailable" notification
+- [ ] **Core Functionality Preservation**: Core LMS features remain fully functional during AI service outages
+- [ ] **User Communication**: Clear messaging about temporary AI feature unavailability
+- [ ] **Automatic Recovery**: System automatically detects when AI services are restored
+
+### Rate Limiting and Conflict Resolution
+- [ ] **Rate Limiting**: 100 requests per user per hour for AI features and API endpoints
+- [ ] **Optimistic Locking**: Detect concurrent edits and show diff to users for conflict resolution
+- [ ] **Conflict Detection**: Track resource versions and detect when changes conflict
+- [ ] **User Notification**: Clear messaging when conflicts occur with options to merge or overwrite
 
 ## Performance Requirements
 
-### Metrics
-- [ ] Lighthouse score ≥ 90
-- [ ] Page load time < 2s
-- [ ] Database query time < 100ms
-- [ ] Support for 1000+ concurrent users per organization
+### Core Metrics
+- [ ] **Lighthouse Score**: ≥ 90 (Performance, Accessibility, Best Practices, SEO)
+- [ ] **Page Load Time**: < 2 seconds for initial page load
+- [ ] **Database Query Time**: < 100ms for 95th percentile queries
+- [ ] **Concurrent Users**: Support 1000+ concurrent users per organization
+- [ ] **API Response Time**: < 500ms for 95th percentile API calls
 
-### Optimization
-- [ ] Proper caching strategies for course content
-- [ ] Database indexing for multi-tenant queries
-- [ ] Code splitting for different user roles
-- [ ] CDN integration for media assets
+### Monitoring Strategy
+- [ ] **Lighthouse Monitoring**: Automated testing on CI/CD pipeline and staging environment
+- [ ] **Performance Budget**: Bundle size limits enforced during build process
+- [ ] **Real User Monitoring**: Basic performance tracking for production users
+- [ ] **Database Performance**: Query performance monitoring with slow query alerts
+
+### Optimization Requirements
+- [ ] **Caching Strategy**: Organization-specific cache keys using format `{organization_id}:{resource_type}:{resource_id}`
+- [ ] **Database Optimization**: Proper indexing for multi-tenant queries, query optimization
+- [ ] **Code Splitting**: Role-based code splitting to reduce initial bundle size
+- [ ] **CDN Integration**: Static asset delivery through CDN for media and public resources
+- [ ] **Image Optimization**: WebP format with fallbacks, responsive image sizing
+- [ ] **Lazy Loading**: Component and route-based lazy loading for non-critical features
 
 ## Testing Requirements
 

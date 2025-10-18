@@ -2,343 +2,267 @@
 
 ## Overview
 
-This guide will help you set up and extend the LogosLMS platform from the current Next.js 15 dashboard implementation. The platform is designed as a multi-tenant Learning Management System with AI coaching and gamification features.
+This guide provides step-by-step instructions for setting up and using LogosLMS, a multi-tenant Learning Management System designed for Christian education organizations.
 
 ## Prerequisites
 
-- Node.js 18+ and npm/yarn
+- Node.js 18+ and npm
+- Supabase account and project
 - Git
-- Supabase account (for database and authentication)
-- Basic knowledge of Next.js, TypeScript, and React
 
-## Project Structure
+## Initial Setup
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── (main)/            # Main application routes
-│   │   ├── auth/          # Authentication pages
-│   │   ├── dashboard/     # Dashboard pages
-│   │   └── unauthorized/  # Unauthorized access page
-│   └── (external)/        # External/public pages
-├── components/            # Reusable UI components
-│   ├── ui/               # Shadcn UI components
-│   └── data-table/       # Data table components
-├── config/               # Application configuration
-├── data/                 # Static data and mock data
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility functions
-├── middleware/           # Next.js middleware
-├── navigation/           # Navigation configuration
-├── server/               # Server actions
-├── stores/               # Zustand stores
-└── types/                # TypeScript type definitions
-```
-
-## Setup Instructions
-
-### 1. Environment Setup
-
-Create a `.env.local` file in the project root:
+### 1. Clone and Install
 
 ```bash
+git clone <repository-url>
+cd LMS
+npm install
+```
+
+### 2. Environment Configuration
+
+Create `.env.local` file:
+
+```env
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 # Application Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-JWT_SECRET=your_jwt_secret
-
-# AI Configuration (Optional)
-OPENAI_API_KEY=your_openai_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
 ```
 
-### 2. Database Setup
+### 3. Database Setup
 
-1. Create a new Supabase project
-2. Run the database migrations from `data-model.md`
-3. Set up Row Level Security (RLS) policies
-4. Create the initial super-admin user
-
-```sql
--- Create super-admin user
-INSERT INTO users (email, role, organization_id, profile_data)
-VALUES ('admin@logoslms.com', 'super_admin', NULL, '{"name": "Super Admin"}');
-```
-
-### 3. Install Dependencies
+Run the database migrations:
 
 ```bash
-npm install
-# or
-yarn install
+# Apply the schema
+npx supabase db push
+
+# Seed initial data (creates super-admin)
+npm run db:seed
 ```
 
-### 4. Development Server
+### 4. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
 Visit `http://localhost:3000` to see the application.
 
-## Current Implementation
+## User Onboarding Flow
 
-### Dashboard Pages
+### Step 1: Super-Admin Setup
 
-The current implementation includes several dashboard pages that serve as starting points:
+1. **Initial Login**: Use the seeded super-admin credentials
+2. **Create Organization**: 
+   - Navigate to Organizations
+   - Click "Create Organization"
+   - Fill in organization details (name, slug, branding)
+   - Save organization
 
-- **Default Dashboard** (`/dashboard/default`): Analytics dashboard with charts and data tables
-- **CRM Dashboard** (`/dashboard/crm`): Customer relationship management interface
-- **Finance Dashboard** (`/dashboard/finance`): Financial overview and account management
+3. **Assign Organization Admin**:
+   - Go to the new organization
+   - Click "Invite Users"
+   - Enter email and select "org_admin" role
+   - Send invitation
+
+### Step 2: Organization Admin Setup
+
+1. **Receive Invitation**: Check email for invitation link
+2. **Complete Registration**:
+   - Click invitation link
+   - Set password and complete profile
+   - Verify email address
+
+3. **Configure Organization**:
+   - Upload organization logo
+   - Set brand colors and theme
+   - Configure organization settings
+
+4. **Invite Users**:
+   - Invite mentors and learners
+   - Create groups for organization
+   - Assign users to groups
+
+### Step 3: Mentor Setup
+
+1. **Receive Invitation**: Check email for invitation link
+2. **Complete Registration**: Set password and profile
+3. **Create Courses**:
+   - Navigate to "My Courses"
+   - Click "Create Course"
+   - Add course title and description
+   - Create lessons and quizzes
+
+4. **Use AI Assistance** (optional):
+   - Enable AI features in organization settings
+   - Use AI to generate course content
+   - Review and approve AI-generated content
+
+### Step 4: Learner Setup
+
+1. **Receive Invitation**: Check email for invitation link
+2. **Complete Registration**: Set password and profile
+3. **Browse Courses**:
+   - View available courses
+   - Enroll in courses of interest
+   - Start learning
+
+4. **Track Progress**:
+   - View motivation dashboard
+   - Earn points and badges
+   - See leaderboard position
+
+## Key Features
+
+### Multi-Tenancy
+
+- **Organization Isolation**: Each organization's data is completely isolated
+- **Organization Switching**: Users can belong to multiple organizations
+- **Custom Branding**: Each organization can customize their appearance
+
+### AI Integration
+
+- **Content Generation**: AI helps create courses, lessons, and quizzes
+- **Human Approval**: All AI content requires instructor approval
+- **Coaching**: AI provides personalized learning suggestions
+
+### Motivation System
+
+- **Points**: Earn points for course enrollment, lesson completion, quiz passes
+- **Badges**: 10-level badge system with clear criteria
+- **Leaderboards**: See how you rank within your organization
+
+### Accessibility
+
+- **WCAG AA Compliance**: Full keyboard navigation and screen reader support
+- **Elder-Friendly Design**: Large fonts, clear buttons, high contrast
+- **Scalable Text**: Text scales up to 200% without horizontal scrolling
+
+## API Usage
 
 ### Authentication
 
-The auth system includes:
-- Login/Register forms with validation
-- Social authentication (Google)
-- Multiple layout options (v1, v2)
-- Form handling with React Hook Form + Zod
-
-### UI Components
-
-Comprehensive component library based on Shadcn UI:
-- Forms, tables, cards, dialogs
-- Sidebar navigation
-- Data tables with TanStack Table
-- Responsive design with Tailwind CSS
-
-## Extending to LMS Features
-
-### Phase 1: Multi-Tenancy Foundation
-
-1. **Set up Supabase integration**
-   ```typescript
-   // lib/supabase.ts
-   import { createClient } from '@supabase/supabase-js'
-   
-   export const supabase = createClient(
-     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-   )
-   ```
-
-2. **Implement organization context**
-   ```typescript
-   // stores/organization.ts
-   import { create } from 'zustand'
-   
-   interface OrganizationState {
-     currentOrganization: Organization | null
-     organizations: Organization[]
-     setCurrentOrganization: (org: Organization) => void
-   }
-   ```
-
-3. **Create super-admin console**
-   - Organization creation interface
-   - User invitation system
-   - Platform-wide analytics
-
-### Phase 2: Core LMS Components
-
-1. **Course Management**
-   ```typescript
-   // components/course/course-card.tsx
-   export function CourseCard({ course }: CourseCardProps) {
-     return (
-       <Card>
-         <CardHeader>
-           <CardTitle>{course.title}</CardTitle>
-           <CardDescription>{course.description}</CardDescription>
-         </CardHeader>
-         <CardContent>
-           <Button onClick={() => onEnroll(course.id)}>
-             Enroll
-           </Button>
-         </CardContent>
-       </Card>
-     )
-   }
-   ```
-
-2. **User Profile Management**
-   - Profile editing interface
-   - Password change functionality
-   - Avatar upload
-
-3. **Organization Branding**
-   - Theme customization
-   - Logo upload
-   - Color scheme management
-
-### Phase 3: AI & Gamification
-
-1. **AI Coaching Interface**
-   ```typescript
-   // components/ai/coach-panel.tsx
-   export function CoachPanel({ userId }: { userId: string }) {
-     const { suggestions, isLoading } = useAICoaching(userId)
-     
-     return (
-       <Card>
-         <CardHeader>
-           <CardTitle>AI Learning Coach</CardTitle>
-         </CardHeader>
-         <CardContent>
-           {isLoading ? <Spinner /> : <SuggestionsList suggestions={suggestions} />}
-         </CardContent>
-       </Card>
-     )
-   }
-   ```
-
-2. **Gamification System**
-   - Points tracking
-   - Badge system
-   - Leaderboards
-   - Progress visualization
-
-## Key Development Patterns
-
-### Multi-Tenant Data Access
-
-Always include organization context in data queries:
-
-```typescript
-// server/actions/courses.ts
-export async function getCourses(organizationId: string) {
-  const { data, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('organization_id', organizationId)
-  
-  if (error) throw error
-  return data
-}
-```
-
-### Server Actions
-
-Use server actions for sensitive operations:
-
-```typescript
-// server/actions/auth.ts
-'use server'
-
-export async function createUser(userData: CreateUserRequest) {
-  // Server-side validation and user creation
-  const { data, error } = await supabase.auth.admin.createUser({
-    email: userData.email,
-    password: userData.password,
-    user_metadata: {
-      organization_id: userData.organizationId,
-      role: userData.role
-    }
-  })
-  
-  if (error) throw error
-  return data
-}
-```
-
-### State Management
-
-Use Zustand for client-side state:
-
-```typescript
-// stores/user.ts
-export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  isLoading: false,
-  setUser: (user) => set({ user }),
-  setLoading: (isLoading) => set({ isLoading })
-}))
-```
-
-## Testing
-
-### Unit Tests
+All API requests require a Bearer token in the Authorization header:
 
 ```bash
-npm run test
+curl -H "Authorization: Bearer your_jwt_token" \
+     https://api.logoslms.com/v1/auth/me
 ```
 
-### Integration Tests
+### Creating a Course
 
 ```bash
-npm run test:integration
+curl -X POST \
+     -H "Authorization: Bearer your_jwt_token" \
+     -H "Content-Type: application/json" \
+     -d '{"title": "Introduction to Faith", "description": "Basic course on Christian faith"}' \
+     https://api.logoslms.com/v1/courses
 ```
 
-### E2E Tests
+### Generating AI Content
 
 ```bash
-npm run test:e2e
+curl -X POST \
+     -H "Authorization: Bearer your_jwt_token" \
+     -H "Content-Type: application/json" \
+     -d '{"content_type": "lesson", "prompt": "Create a lesson about prayer"}' \
+     https://api.logoslms.com/v1/ai/content/generate
 ```
 
-## Deployment
+## Development Workflow
 
-### Vercel (Recommended)
+### Adding New Features
 
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
+1. **Update Specification**: Modify `spec.md` with new requirements
+2. **Update Data Model**: Add entities to `data-model.md`
+3. **Update API Contracts**: Modify `contracts/openapi.yaml`
+4. **Implement Feature**: Follow the implementation plan
+5. **Test**: Ensure all tests pass
+6. **Document**: Update this quickstart guide
 
-### Other Platforms
+### Database Changes
 
-The application can be deployed to any platform that supports Next.js:
-- Netlify
-- AWS Amplify
-- Railway
-- DigitalOcean App Platform
+1. **Create Migration**: Add new migration file
+2. **Update Schema**: Modify database schema
+3. **Update RLS Policies**: Ensure tenant isolation
+4. **Test**: Verify multi-tenant isolation
+
+### AI Integration
+
+1. **Choose Provider**: Select AI service (OpenAI, Anthropic, local)
+2. **Implement Interface**: Use abstract AI service interface
+3. **Add Approval Workflow**: Ensure human validation
+4. **Test**: Verify content quality and safety
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Supabase Connection Issues**
-   - Verify environment variables
-   - Check Supabase project status
-   - Ensure RLS policies are correctly configured
+**Database Connection Failed**
+- Check Supabase credentials in `.env.local`
+- Verify Supabase project is active
+- Ensure database migrations are applied
 
-2. **Authentication Problems**
-   - Verify JWT secret configuration
-   - Check user role assignments
-   - Ensure proper organization context
+**Authentication Errors**
+- Verify JWT token is valid and not expired
+- Check organization_id is present in token
+- Ensure user has proper role permissions
 
-3. **Performance Issues**
-   - Check database query optimization
-   - Verify caching strategies
-   - Monitor bundle size
+**Multi-Tenant Data Leaks**
+- Verify RLS policies are enabled
+- Check cache keys include organization_id
+- Test with multiple organizations
+
+**AI Content Not Generating**
+- Check AI provider credentials
+- Verify organization has AI features enabled
+- Ensure content is pending approval
 
 ### Getting Help
 
-- Check the [documentation](./spec.md)
-- Review the [data model](./data-model.md)
-- Consult the [API contracts](./contracts/)
-- Open an issue in the repository
+- Check the API documentation at `/api/docs`
+- Review the data model in `data-model.md`
+- Contact support at support@logoslms.com
 
-## Next Steps
+## Security Considerations
 
-1. Review the [project plan](./plan.md) for detailed implementation phases
-2. Set up your development environment
-3. Start with Phase 1: Multi-tenancy foundation
-4. Gradually implement LMS-specific features
-5. Add AI and gamification features
+### Data Protection
 
-## Contributing
+- All data is encrypted at rest using Supabase encryption
+- RLS policies prevent cross-tenant data access
+- Audit logs track all admin actions
+- GDPR compliance for data handling
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+### Best Practices
 
-## License
+- Use strong passwords (minimum 8 characters)
+- Enable two-factor authentication when available
+- Regularly review user permissions
+- Monitor audit logs for suspicious activity
 
-This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+## Performance Optimization
+
+### Caching
+
+- Organization-specific cache keys prevent data leaks
+- Cache frequently accessed data
+- Use CDN for static assets
+
+### Database
+
+- Proper indexing on organization_id and created_at
+- Optimize queries for multi-tenant access
+- Regular performance monitoring
+
+### Frontend
+
+- Code splitting by user role
+- Lazy loading for non-critical components
+- Image optimization with Next.js Image component
