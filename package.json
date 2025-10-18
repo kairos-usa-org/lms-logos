@@ -14,7 +14,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false"
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "db:setup": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/setup-database.ts",
+    "db:migrate": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/lib/migration-runner.ts migrate",
+    "db:status": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/lib/migration-runner.ts status",
+    "db:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/lib/seed-data.ts seed"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
