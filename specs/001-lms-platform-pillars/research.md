@@ -61,15 +61,24 @@
 
 **Task:** Research caching strategies that prevent cross-tenant data leaks
 
-**Decision:** Organization-specific cache keys with Redis
+**Decision:** Supabase-based caching with RLS policies for multi-tenant isolation
 
 **Rationale:**
 - `{organization_id}:{resource_type}:{resource_id}` format ensures isolation
-- Redis provides fast access and TTL support
-- Clear naming convention prevents accidental cross-tenant access
-- Supports both application and database query caching
+- Supabase database provides fast access with built-in TTL support
+- RLS policies automatically enforce tenant isolation at database level
+- No additional infrastructure required - leverages existing Supabase setup
+- Native integration with Supabase Auth and realtime features
+- Cost-effective solution with simplified deployment
+
+**Implementation:**
+- Cache table with `organization_id`, `cache_key`, `data` (JSONB), `expires_at`
+- RLS policies ensure users only access cache for their organization
+- Automatic cleanup function for expired cache entries
+- Leverages Supabase's connection pooling and performance optimizations
 
 **Alternatives considered:**
+- Redis with organization-specific keys: Additional infrastructure cost
 - Global cache with tenant filtering: Security risk, complex invalidation
 - Tenant-specific cache instances: High operational overhead
 - No caching: Poor performance, not scalable
