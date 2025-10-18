@@ -94,25 +94,33 @@ The constitution MUST include these core principles:
 ## Output Format
 
 ### Constitution File Structure
+
 ```markdown
 <!-- Sync Impact Report -->
+
 # [PROJECT_NAME] Project Constitution
+
 **Version:** [X.Y.Z]
 **Ratification Date:** [YYYY-MM-DD]
 **Last Amended Date:** [YYYY-MM-DD]
 
 ## Project Overview
+
 [Brief project description]
 
 ## Core Principles
+
 ### 1. [PRINCIPLE_NAME]
+
 [Principle description with MUST/SHOULD requirements and rationale]
 
 ## Governance
+
 [Amendment procedure, versioning policy, compliance review]
 ```
 
 ### Sync Impact Report Format
+
 ```html
 <!--
 Sync Impact Report:

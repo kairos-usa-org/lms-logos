@@ -3,6 +3,7 @@
 ## Constitution Alignment
 
 This specification MUST comply with LogosLMS constitution:
+
 - Multi-tenant architecture with strict RLS
 - WCAG AA accessibility standards
 - Supabase Auth integration
@@ -23,12 +24,14 @@ This specification MUST comply with LogosLMS constitution:
 ## User Stories
 
 ### As a [USER_TYPE]
+
 - [ ] I want [FUNCTIONALITY] so that [BENEFIT]
 - [ ] I want [FUNCTIONALITY] so that [BENEFIT]
 
 ## Technical Requirements
 
 ### Database Schema
+
 ```sql
 -- [SCHEMA_DEFINITION]
 -- MUST include organization_id for multi-tenancy
@@ -36,6 +39,7 @@ This specification MUST comply with LogosLMS constitution:
 ```
 
 ### API Endpoints
+
 ```typescript
 // [API_DEFINITION]
 // MUST include proper authentication
@@ -43,6 +47,7 @@ This specification MUST comply with LogosLMS constitution:
 ```
 
 ### UI Components
+
 - [ ] [COMPONENT_1]: [DESCRIPTION]
 - [ ] [COMPONENT_2]: [DESCRIPTION]
 - [ ] [COMPONENT_3]: [DESCRIPTION]
@@ -50,11 +55,13 @@ This specification MUST comply with LogosLMS constitution:
 ## Multi-Tenancy Requirements
 
 ### Data Isolation
+
 - [ ] All queries MUST include organization_id filter
 - [ ] RLS policies MUST be implemented
 - [ ] Cross-tenant data access MUST be prevented
 
 ### User Context
+
 - [ ] JWT MUST include organization_id
 - [ ] Session MUST track active organization
 - [ ] Organization switching MUST be supported
@@ -62,11 +69,13 @@ This specification MUST comply with LogosLMS constitution:
 ## Security Requirements
 
 ### Authentication
+
 - [ ] Supabase Auth integration
 - [ ] Role-based access control
 - [ ] Session management
 
 ### Data Protection
+
 - [ ] All sensitive data encrypted
 - [ ] Audit logging implemented
 - [ ] Privacy controls in place
@@ -74,12 +83,14 @@ This specification MUST comply with LogosLMS constitution:
 ## Accessibility Requirements
 
 ### WCAG AA Compliance
+
 - [ ] Keyboard navigation support
 - [ ] Screen reader compatibility
 - [ ] Color contrast compliance
 - [ ] Scalable text support
 
 ### User Experience
+
 - [ ] Elder-friendly design
 - [ ] Clear focus indicators
 - [ ] Intuitive navigation
@@ -87,11 +98,13 @@ This specification MUST comply with LogosLMS constitution:
 ## AI Integration (if applicable)
 
 ### AI Features
+
 - [ ] Human-in-the-loop validation
 - [ ] Clear AI-generated content labeling
 - [ ] Organization-level opt-in controls
 
 ### Safety Measures
+
 - [ ] Content appropriateness checks
 - [ ] Bias detection and mitigation
 - [ ] Transparent AI decision making
@@ -99,11 +112,13 @@ This specification MUST comply with LogosLMS constitution:
 ## Performance Requirements
 
 ### Metrics
+
 - [ ] Lighthouse score ≥ 90
 - [ ] Page load time < 2s
 - [ ] Database query time < 100ms
 
 ### Optimization
+
 - [ ] Proper caching strategies
 - [ ] Database indexing
 - [ ] Code splitting
@@ -111,16 +126,19 @@ This specification MUST comply with LogosLMS constitution:
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Component testing
 - [ ] Utility function testing
 - [ ] API endpoint testing
 
 ### Integration Tests
+
 - [ ] Multi-tenant data isolation
 - [ ] Authentication flows
 - [ ] Cross-browser compatibility
 
 ### Accessibility Tests
+
 - [ ] Screen reader testing
 - [ ] Keyboard navigation testing
 - [ ] Color contrast validation

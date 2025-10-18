@@ -15,57 +15,59 @@ I’ve taken design inspiration from various sources. If you’d like credit for
 
 ## Features
 
-- Built with Next.js 15, TypeScript, Tailwind CSS v4, and Shadcn UI  
-- Responsive and mobile-friendly  
-- Customizable theme presets (light/dark modes with color schemes like Tangerine, Brutalist, and more)  
-- Flexible layouts (collapsible sidebar, variable content widths)  
-- Authentication flows and screens  
-- Prebuilt dashboards (Default, CRM, Finance) with more coming soon  
-- Role-Based Access Control (RBAC) with config-driven UI and multi-tenant support *(planned)*  
+- Built with Next.js 15, TypeScript, Tailwind CSS v4, and Shadcn UI
+- Responsive and mobile-friendly
+- Customizable theme presets (light/dark modes with color schemes like Tangerine, Brutalist, and more)
+- Flexible layouts (collapsible sidebar, variable content widths)
+- Authentication flows and screens
+- Prebuilt dashboards (Default, CRM, Finance) with more coming soon
+- Role-Based Access Control (RBAC) with config-driven UI and multi-tenant support _(planned)_
 
 > [!NOTE]
 > The default dashboard uses the **shadcn neutral** theme.  
-> It also includes additional color presets inspired by [Tweakcn](https://tweakcn.com):  
+> It also includes additional color presets inspired by [Tweakcn](https://tweakcn.com):
 >
-> - Tangerine  
-> - Neo Brutalism  
-> - Soft Pop  
+> - Tangerine
+> - Neo Brutalism
+> - Soft Pop
 >
-> You can create more presets by following the same structure as the existing ones.  
+> You can create more presets by following the same structure as the existing ones.
 
 > Looking for the **Next.js 14 + Tailwind CSS v3** version?  
 > Check out the [`archive/next14-tailwindv3`](https://github.com/arhamkhnz/next-shadcn-admin-dashboard/tree/archive/next14-tailwindv3) branch.  
-> It has a different color theme and is not actively maintained, but I try to keep it updated with major changes.  
+> It has a different color theme and is not actively maintained, but I try to keep it updated with major changes.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4  
-- **UI Components**: Shadcn UI  
-- **Validation**: Zod  
-- **Forms & State Management**: React Hook Form, Zustand  
-- **Tables & Data Handling**: TanStack Table  
-- **Tooling & DX**: ESLint, Prettier, Husky  
+- **Framework**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4
+- **UI Components**: Shadcn UI
+- **Validation**: Zod
+- **Forms & State Management**: React Hook Form, Zustand
+- **Tables & Data Handling**: TanStack Table
+- **Tooling & DX**: ESLint, Prettier, Husky
 
 ## Screens
 
 ### Available
-- Default Dashboard  
-- CRM Dashboard  
-- Finance Dashboard  
+
+- Default Dashboard
+- CRM Dashboard
+- Finance Dashboard
 - Authentication (4 screens)
 
 ### Coming Soon
-- Analytics Dashboard  
-- eCommerce Dashboard  
-- Academy Dashboard  
-- Logistics Dashboard  
-- Email Page  
-- Chat Page  
-- Calendar Page  
-- Kanban Board  
-- Invoice Page  
-- Users Management  
-- Roles Management  
+
+- Analytics Dashboard
+- eCommerce Dashboard
+- Academy Dashboard
+- Logistics Dashboard
+- Email Page
+- Chat Page
+- Calendar Page
+- Kanban Board
+- Invoice Page
+- Users Management
+- Roles Management
 
 ## Colocation File System Architecture
 
@@ -90,13 +92,12 @@ _Deploy your own copy with one click._
    ```bash
    git clone https://github.com/arhamkhnz/next-shadcn-admin-dashboard.git
    ```
-   
 2. **Navigate into the project**
    ```bash
     cd next-shadcn-admin-dashboard
    ```
-   
 3. **Install dependencies**
+
    ```bash
     npm install
    ```
@@ -116,6 +117,5 @@ Your app will be running at [http://localhost:3000](http://localhost:3000)
 ---
 
 Contributions are welcome. Feel free to open issues, feature requests, or start a discussion.
-
 
 **Happy Vibe Coding!**

@@ -9,18 +9,18 @@ export type UUID = string;
 export type Timestamp = string; // ISO 8601 format
 
 // User roles
-export type UserRole = "super_admin" | "org_admin" | "mentor" | "learner";
+export type UserRole = 'super_admin' | 'org_admin' | 'mentor' | 'learner';
 
 // Course status
-export type CourseStatus = "draft" | "published" | "archived";
+export type CourseStatus = 'draft' | 'published' | 'archived';
 
 // AI content types
-export type ContentType = "lesson" | "quiz" | "assignment" | "explanation";
-export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
-export type LearningStyle = "visual" | "auditory" | "kinesthetic" | "reading";
+export type ContentType = 'lesson' | 'quiz' | 'assignment' | 'explanation';
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+export type LearningStyle = 'visual' | 'auditory' | 'kinesthetic' | 'reading';
 
 // Audit log outcomes
-export type AuditOutcome = "success" | "failure" | "error";
+export type AuditOutcome = 'success' | 'failure' | 'error';
 
 // API response types
 export interface ApiResponse<T> {
@@ -60,7 +60,7 @@ export interface UserProfileData {
 }
 
 export interface UserPreferences {
-  theme?: "light" | "dark" | "auto";
+  theme?: 'light' | 'dark' | 'auto';
   notifications?: NotificationSettings;
   accessibility?: AccessibilitySettings;
 }
@@ -150,14 +150,14 @@ export interface Lesson {
 }
 
 export interface LessonContent {
-  type: "text" | "video" | "interactive" | "document";
+  type: 'text' | 'video' | 'interactive' | 'document';
   data: Record<string, unknown>;
   resources?: Resource[];
 }
 
 export interface Resource {
   id: string;
-  type: "file" | "link" | "video" | "image";
+  type: 'file' | 'link' | 'video' | 'image';
   url: string;
   title: string;
   description?: string;
@@ -177,7 +177,7 @@ export interface Quiz {
 
 export interface QuizQuestion {
   id: string;
-  type: "multiple_choice" | "true_false" | "short_answer" | "essay";
+  type: 'multiple_choice' | 'true_false' | 'short_answer' | 'essay';
   question: string;
   options?: string[]; // for multiple choice
   correctAnswer?: string | string[];
@@ -269,7 +269,7 @@ export interface InvitationResponse {
   id: UUID;
   email: string;
   role: UserRole;
-  status: "pending" | "accepted" | "expired";
+  status: 'pending' | 'accepted' | 'expired';
 }
 
 export interface UpdateProfileRequest {
@@ -330,7 +330,7 @@ export interface ContentGenerationRequest {
 export interface ContentGenerationResponse {
   id: UUID;
   content: Record<string, unknown>;
-  status: "pending" | "approved" | "rejected";
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 export interface RejectContentRequest {
@@ -446,7 +446,7 @@ export interface ContentData {
   id: UUID;
   type: ContentType;
   content: Record<string, unknown>;
-  status: "pending" | "approved" | "rejected";
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 // Utility types
@@ -480,34 +480,34 @@ export interface EmailTemplate {
 
 // Supabase project configuration
 export const SUPABASE_CONFIG = {
-  projectRef: "sdxiwingetjnbxrkfpbg",
-  url: "https://sdxiwingetjnbxrkfpbg.supabase.co",
+  projectRef: 'sdxiwingetjnbxrkfpbg',
+  url: 'https://sdxiwingetjnbxrkfpbg.supabase.co',
 } as const;
 
 // API endpoint types
 export type ApiEndpoint =
-  | "POST /auth/register"
-  | "POST /auth/login"
-  | "POST /auth/logout"
-  | "GET /auth/me"
-  | "GET /organizations"
-  | "POST /organizations"
-  | "GET /organizations/{id}"
-  | "PUT /organizations/{id}"
-  | "POST /organizations/{id}/invite"
-  | "GET /organizations/{id}/users"
-  | "PUT /users/{id}/profile"
-  | "PUT /users/{id}/password"
-  | "GET /courses"
-  | "POST /courses"
-  | "GET /courses/{id}"
-  | "PUT /courses/{id}"
-  | "DELETE /courses/{id}"
-  | "POST /ai/coach/analyze"
-  | "POST /ai/coach/suggest"
-  | "POST /ai/content/generate"
-  | "POST /ai/content/{id}/approve"
-  | "POST /ai/content/{id}/reject"
-  | "GET /motivation/leaderboard"
-  | "GET /motivation/badges"
-  | "POST /motivation/points";
+  | 'POST /auth/register'
+  | 'POST /auth/login'
+  | 'POST /auth/logout'
+  | 'GET /auth/me'
+  | 'GET /organizations'
+  | 'POST /organizations'
+  | 'GET /organizations/{id}'
+  | 'PUT /organizations/{id}'
+  | 'POST /organizations/{id}/invite'
+  | 'GET /organizations/{id}/users'
+  | 'PUT /users/{id}/profile'
+  | 'PUT /users/{id}/password'
+  | 'GET /courses'
+  | 'POST /courses'
+  | 'GET /courses/{id}'
+  | 'PUT /courses/{id}'
+  | 'DELETE /courses/{id}'
+  | 'POST /ai/coach/analyze'
+  | 'POST /ai/coach/suggest'
+  | 'POST /ai/content/generate'
+  | 'POST /ai/content/{id}/approve'
+  | 'POST /ai/content/{id}/reject'
+  | 'GET /motivation/leaderboard'
+  | 'GET /motivation/badges'
+  | 'POST /motivation/points';

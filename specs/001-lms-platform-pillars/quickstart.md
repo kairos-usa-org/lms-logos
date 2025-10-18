@@ -80,6 +80,7 @@ npm run dev
 ### 1. Create Super-Admin Account
 
 The database seeding creates a super-admin account:
+
 - **Email:** admin@logoslms.com
 - **Password:** admin123 (change immediately)
 
@@ -119,8 +120,8 @@ const response = await fetch('/api/auth/login', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     email: 'user@example.com',
-    password: 'password123'
-  })
+    password: 'password123',
+  }),
 });
 
 const { user, token, organizationId } = await response.json();
@@ -133,14 +134,14 @@ const { user, token, organizationId } = await response.json();
 const org = await fetch('/api/organizations', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     'X-Organization-ID': organizationId,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
   body: JSON.stringify({
     name: 'New Organization',
-    slug: 'new-org'
-  })
+    slug: 'new-org',
+  }),
 });
 ```
 
@@ -151,9 +152,9 @@ const org = await fetch('/api/organizations', {
 const course = await fetch('/api/courses', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     'X-Organization-ID': organizationId,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
   body: JSON.stringify({
     title: 'Introduction to Faith',
@@ -163,10 +164,10 @@ const course = await fetch('/api/courses', {
       quizzes: [],
       metadata: {
         estimatedDuration: 120,
-        learningObjectives: ['Understand basic concepts']
-      }
-    }
-  })
+        learningObjectives: ['Understand basic concepts'],
+      },
+    },
+  }),
 });
 ```
 
@@ -177,16 +178,16 @@ const course = await fetch('/api/courses', {
 const aiContent = await fetch('/api/ai/content/generate', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     'X-Organization-ID': organizationId,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
   body: JSON.stringify({
     type: 'lesson',
     topic: 'The Trinity',
     difficulty: 'beginner',
-    context: 'Christian education course'
-  })
+    context: 'Christian education course',
+  }),
 });
 ```
 
@@ -318,6 +319,7 @@ npm run logs:db
 ### Common Issues
 
 **Database Connection Failed**
+
 ```bash
 # Check database status
 npm run db:status
@@ -327,6 +329,7 @@ npm run db:reset
 ```
 
 **Authentication Issues**
+
 ```bash
 # Check JWT token
 npm run auth:verify-token
@@ -336,6 +339,7 @@ npm run auth:reset-sessions
 ```
 
 **AI Service Errors**
+
 ```bash
 # Test AI connectivity
 npm run ai:test-connection

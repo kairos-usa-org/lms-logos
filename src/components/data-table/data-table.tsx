@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 import {
   KeyboardSensor,
@@ -10,14 +10,29 @@ import {
   closestCenter,
   type UniqueIdentifier,
   type DragEndEvent,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
-import { ColumnDef, flexRender, type Table as TanStackTable } from "@tanstack/react-table";
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import {
+  ColumnDef,
+  flexRender,
+  type Table as TanStackTable,
+} from '@tanstack/react-table';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
-import { DraggableRow } from "./draggable-row";
+import { DraggableRow } from './draggable-row';
 
 interface DataTableProps<TData, TValue> {
   table: TanStackTable<TData>;
@@ -40,7 +55,7 @@ function renderTableBody<TData, TValue>({
   if (!table.getRowModel().rows.length) {
     return (
       <TableRow>
-        <TableCell colSpan={columns.length} className="h-24 text-center">
+        <TableCell colSpan={columns.length} className='h-24 text-center'>
           No results.
         </TableCell>
       </TableRow>
@@ -49,16 +64,18 @@ function renderTableBody<TData, TValue>({
   if (dndEnabled) {
     return (
       <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
-        {table.getRowModel().rows.map((row) => (
+        {table.getRowModel().rows.map(row => (
           <DraggableRow key={row.id} row={row} />
         ))}
       </SortableContext>
     );
   }
-  return table.getRowModel().rows.map((row) => (
-    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-      {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+  return table.getRowModel().rows.map(row => (
+    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+      {row.getVisibleCells().map(cell => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
       ))}
     </TableRow>
   ));
@@ -70,9 +87,15 @@ export function DataTable<TData, TValue>({
   dndEnabled = false,
   onReorder,
 }: DataTableProps<TData, TValue>) {
-  const dataIds: UniqueIdentifier[] = table.getRowModel().rows.map((row) => Number(row.id) as UniqueIdentifier);
+  const dataIds: UniqueIdentifier[] = table
+    .getRowModel()
+    .rows.map(row => Number(row.id) as UniqueIdentifier);
   const sortableId = React.useId();
-  const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {})
+  );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -88,20 +111,25 @@ export function DataTable<TData, TValue>({
 
   const tableContent = (
     <Table>
-      <TableHeader className="bg-muted sticky top-0 z-10">
-        {table.getHeaderGroups().map((headerGroup) => (
+      <TableHeader className='bg-muted sticky top-0 z-10'>
+        {table.getHeaderGroups().map(headerGroup => (
           <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
+            {headerGroup.headers.map(header => {
               return (
                 <TableHead key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                 </TableHead>
               );
             })}
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody className="**:data-[slot=table-cell]:first:w-8">
+      <TableBody className='**:data-[slot=table-cell]:first:w-8'>
         {renderTableBody({ table, columns, dndEnabled, dataIds })}
       </TableBody>
     </Table>

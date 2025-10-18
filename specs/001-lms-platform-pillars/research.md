@@ -11,13 +11,15 @@
 
 **Decision:** Row-Level Security (RLS) with organization_id in all domain objects
 
-**Rationale:** 
+**Rationale:**
+
 - RLS provides database-level security enforcement
 - organization_id pattern ensures consistent tenant isolation
 - Supabase RLS integrates seamlessly with Next.js middleware
 - Supports both single-tenant and multi-tenant users
 
 **Alternatives considered:**
+
 - Database-per-tenant: Too complex for MVP, higher operational overhead
 - Schema-per-tenant: Limited by Supabase constraints, harder to manage
 - Application-level filtering: Security risk, prone to human error
@@ -29,12 +31,14 @@
 **Decision:** Abstract service interface with provider-specific implementations
 
 **Rationale:**
+
 - Enables provider switching without code changes
 - Supports both cloud and on-premises deployments
 - Allows for A/B testing of different AI providers
 - Maintains consistent error handling and rate limiting
 
 **Alternatives considered:**
+
 - Direct API integration: Tight coupling, harder to test
 - Microservice architecture: Overkill for MVP, added complexity
 - Serverless functions: Vendor lock-in, limited control
@@ -46,6 +50,7 @@
 **Decision:** Resend API for transactional emails
 
 **Rationale:**
+
 - Developer-friendly API with excellent documentation
 - High deliverability rates for transactional emails
 - Built-in templates and analytics
@@ -53,6 +58,7 @@
 - Easy integration with Next.js applications
 
 **Alternatives considered:**
+
 - SendGrid: More complex setup, higher cost
 - AWS SES: Requires more configuration, lower-level API
 - Mailgun: Good alternative but Resend has better DX
@@ -64,6 +70,7 @@
 **Decision:** Supabase-based caching with RLS policies for multi-tenant isolation
 
 **Rationale:**
+
 - `{organization_id}:{resource_type}:{resource_id}` format ensures isolation
 - Supabase database provides fast access with built-in TTL support
 - RLS policies automatically enforce tenant isolation at database level
@@ -72,12 +79,14 @@
 - Cost-effective solution with simplified deployment
 
 **Implementation:**
+
 - Cache table with `organization_id`, `cache_key`, `data` (JSONB), `expires_at`
 - RLS policies ensure users only access cache for their organization
 - Automatic cleanup function for expired cache entries
 - Leverages Supabase's connection pooling and performance optimizations
 
 **Alternatives considered:**
+
 - Redis with organization-specific keys: Additional infrastructure cost
 - Global cache with tenant filtering: Security risk, complex invalidation
 - Tenant-specific cache instances: High operational overhead
@@ -90,12 +99,14 @@
 **Decision:** Immutable audit logs with structured data and retention policies
 
 **Rationale:**
+
 - Immutable logs ensure data integrity for compliance
 - Structured data enables efficient querying and analysis
 - 7-year retention meets most compliance requirements
 - JSONB format provides flexibility for different event types
 
 **Alternatives considered:**
+
 - File-based logging: Harder to query, not scalable
 - External logging service: Additional cost, vendor dependency
 - Database-only logging: Performance impact, storage costs
@@ -107,12 +118,14 @@
 **Decision:** Database indexing, query optimization, and CDN integration
 
 **Rationale:**
+
 - Proper indexing on organization_id and common query patterns
 - Query optimization reduces database load
 - CDN for static assets improves global performance
 - Code splitting reduces initial bundle size
 
 **Alternatives considered:**
+
 - Database sharding: Complex for MVP, operational overhead
 - Read replicas: Additional cost, eventual consistency issues
 - Microservices: Overkill for MVP, distributed system complexity
@@ -124,12 +137,14 @@
 **Decision:** Shadcn UI components with custom accessibility enhancements
 
 **Rationale:**
+
 - Shadcn UI provides solid accessibility foundation
 - Custom enhancements ensure WCAG AA compliance
 - Consistent patterns across all components
 - Screen reader testing with NVDA/JAWS
 
 **Alternatives considered:**
+
 - Custom component library: High development overhead
 - Third-party accessibility library: Additional dependency, potential conflicts
 - Basic HTML elements: Poor UX, inconsistent styling
@@ -141,12 +156,14 @@
 **Decision:** Human-in-the-loop validation with content labeling
 
 **Rationale:**
+
 - Human validation ensures content appropriateness
 - Clear labeling maintains transparency
 - Approval workflow prevents inappropriate content
 - Audit trail for compliance and improvement
 
 **Alternatives considered:**
+
 - Automated content filtering: High false positive rate, limited context understanding
 - No validation: Safety risk, potential inappropriate content
 - External moderation service: Additional cost, privacy concerns
@@ -158,29 +175,31 @@
 **Decision:** Trust-based motivation system with transparent point allocation
 
 **Rationale:**
+
 - Trust-based system reduces complexity and overhead
 - Transparent point allocation maintains fairness
 - Focus on learning outcomes rather than point accumulation
 - Simple badge system provides recognition
 
 **Alternatives considered:**
+
 - Complex anti-gaming measures: High development overhead, poor UX
 - No gamification: Reduced engagement, missed learning opportunities
 - External gamification platform: Vendor lock-in, limited customization
 
 ## Technical Decisions Summary
 
-| Area | Decision | Rationale |
-|------|----------|-----------|
-| Multi-tenancy | RLS with organization_id | Database-level security, Supabase integration |
-| AI Integration | Abstract service interface | Provider flexibility, testability |
-| Email Service | Resend API | Developer experience, deliverability |
-| Caching | Organization-specific keys | Security, performance, scalability |
-| Audit Logging | Immutable structured logs | Compliance, security, queryability |
-| Performance | Indexing + CDN + optimization | Scalability, user experience |
-| Accessibility | Shadcn UI + enhancements | WCAG AA compliance, consistency |
-| AI Safety | Human-in-the-loop validation | Content appropriateness, transparency |
-| Gamification | Trust-based system | Simplicity, learning focus |
+| Area           | Decision                      | Rationale                                     |
+| -------------- | ----------------------------- | --------------------------------------------- |
+| Multi-tenancy  | RLS with organization_id      | Database-level security, Supabase integration |
+| AI Integration | Abstract service interface    | Provider flexibility, testability             |
+| Email Service  | Resend API                    | Developer experience, deliverability          |
+| Caching        | Organization-specific keys    | Security, performance, scalability            |
+| Audit Logging  | Immutable structured logs     | Compliance, security, queryability            |
+| Performance    | Indexing + CDN + optimization | Scalability, user experience                  |
+| Accessibility  | Shadcn UI + enhancements      | WCAG AA compliance, consistency               |
+| AI Safety      | Human-in-the-loop validation  | Content appropriateness, transparency         |
+| Gamification   | Trust-based system            | Simplicity, learning focus                    |
 
 ## Implementation Notes
 

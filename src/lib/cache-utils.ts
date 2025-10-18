@@ -1,4 +1,4 @@
-import { createOrganizationCacheKey } from "./jwt-utils";
+import { createOrganizationCacheKey } from './jwt-utils';
 
 export interface CacheConfig {
   ttl: number; // Time to live in seconds
@@ -18,14 +18,14 @@ const memoryCache = new Map<string, CacheItem>();
 // Default cache configuration
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
   ttl: 300, // 5 minutes
-  namespace: "lms",
+  namespace: 'lms',
 };
 
 // Cache key validation
 export const validateCacheKey = (key: string): boolean => {
   // Cache keys must follow the pattern: {organization_id}:{resource_type}:{resource_id}
-  const parts = key.split(":");
-  return parts.length >= 2 && parts.every((part) => part.length > 0);
+  const parts = key.split(':');
+  return parts.length >= 2 && parts.every(part => part.length > 0);
 };
 
 // Create organization-isolated cache key
@@ -33,14 +33,18 @@ export const createCacheKey = (
   organizationId: string,
   resourceType: string,
   resourceId?: string,
-  additionalParams?: Record<string, string>,
+  additionalParams?: Record<string, string>
 ): string => {
-  let key = createOrganizationCacheKey(organizationId, resourceType, resourceId);
+  let key = createOrganizationCacheKey(
+    organizationId,
+    resourceType,
+    resourceId
+  );
 
   if (additionalParams) {
     const paramString = Object.entries(additionalParams)
       .map(([k, v]) => `${k}=${v}`)
-      .join("&");
+      .join('&');
     key += `:${paramString}`;
   }
 
@@ -53,7 +57,7 @@ export const setCacheItem = <T>(
   resourceType: string,
   data: T,
   resourceId?: string,
-  ttl: number = DEFAULT_CACHE_CONFIG.ttl,
+  ttl: number = DEFAULT_CACHE_CONFIG.ttl
 ): void => {
   const key = createCacheKey(organizationId, resourceType, resourceId);
 
@@ -71,7 +75,7 @@ export const setCacheItem = <T>(
 export const getCacheItem = <T>(
   organizationId: string,
   resourceType: string,
-  resourceId?: string,
+  resourceId?: string
 ): T | null => {
   const key = createCacheKey(organizationId, resourceType, resourceId);
   const item = memoryCache.get(key);
@@ -99,7 +103,7 @@ export const getCacheItem = <T>(
 export const deleteCacheItem = (
   organizationId: string,
   resourceType: string,
-  resourceId?: string,
+  resourceId?: string
 ): boolean => {
   const key = createCacheKey(organizationId, resourceType, resourceId);
   return memoryCache.delete(key);
@@ -122,7 +126,7 @@ export const clearOrganizationCache = (organizationId: string): number => {
 // Clear all cache items for a specific resource type in an organization
 export const clearResourceTypeCache = (
   organizationId: string,
-  resourceType: string,
+  resourceType: string
 ): number => {
   let deletedCount = 0;
   const prefix = `${organizationId}:${resourceType}`;
@@ -151,7 +155,7 @@ export const getCacheStats = () => {
   for (const [key, item] of memoryCache.entries()) {
     stats.organizations.add(item.organizationId);
 
-    const resourceType = key.split(":")[1];
+    const resourceType = key.split(':')[1];
     stats.resourceTypes.add(resourceType);
 
     if (now - item.timestamp > item.ttl) {
@@ -186,7 +190,7 @@ export const withCache = <T>(
   organizationId: string,
   resourceType: string,
   resourceId?: string,
-  ttl: number = DEFAULT_CACHE_CONFIG.ttl,
+  ttl: number = DEFAULT_CACHE_CONFIG.ttl
 ) => {
   return (handler: () => Promise<T>) => {
     return async (): Promise<T> => {
@@ -224,7 +228,7 @@ export const warmCache = async <T>(
   organizationId: string,
   resourceType: string,
   dataFetcher: () => Promise<T[]>,
-  ttl: number = DEFAULT_CACHE_CONFIG.ttl,
+  ttl: number = DEFAULT_CACHE_CONFIG.ttl
 ): Promise<void> => {
   try {
     const data = await dataFetcher();
@@ -238,7 +242,7 @@ export const warmCache = async <T>(
     // Also cache the list itself
     setCacheItem(organizationId, resourceType, data, undefined, ttl);
   } catch (error) {
-    console.error("Failed to warm cache:", error);
+    console.error('Failed to warm cache:', error);
   }
 };
 
@@ -255,7 +259,7 @@ export const checkCacheHealth = () => {
     },
     recommendations:
       stats.expiredItems > stats.totalItems * 0.2
-        ? ["Consider increasing TTL values", "Implement cache warming strategy"]
+        ? ['Consider increasing TTL values', 'Implement cache warming strategy']
         : [],
   };
 };

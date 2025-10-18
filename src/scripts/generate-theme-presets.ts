@@ -14,65 +14,77 @@
  * - This generation step is currently automated using a Husky pre-push hook.
  * - You may optionally integrate it directly into a build step if preferred.
  */
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
-import prettier from "prettier";
+import prettier from 'prettier';
 
-const presetDir = path.resolve(__dirname, "../styles/presets");
+const presetDir = path.resolve(__dirname, '../styles/presets');
 
 if (!fs.existsSync(presetDir)) {
   console.error(`❌ Preset directory not found at: ${presetDir}`);
   process.exit(1);
 }
 
-const outputPath = path.resolve(__dirname, "../types/preferences/theme.ts");
+const outputPath = path.resolve(__dirname, '../types/preferences/theme.ts');
 
-const files = fs.readdirSync(presetDir).filter((file) => file.endsWith(".css"));
+const files = fs.readdirSync(presetDir).filter(file => file.endsWith('.css'));
 
 if (files.length === 0) {
-  console.warn("⚠️ No preset CSS files found. Only default preset will be included.");
+  console.warn(
+    '⚠️ No preset CSS files found. Only default preset will be included.'
+  );
 }
 
 // eslint-disable-next-line complexity
-const presets = files.map((file) => {
+const presets = files.map(file => {
   const filePath = path.join(presetDir, file);
   // eslint-disable-next-line security/detect-non-literal-fs-filename
-  const content = fs.readFileSync(filePath, "utf8");
+  const content = fs.readFileSync(filePath, 'utf8');
 
   const labelMatch = content.match(/label:\s*(.+)/);
   const valueMatch = content.match(/value:\s*(.+)/);
 
   if (!labelMatch) {
-    console.warn(`⚠️ No 'label:' found in ${file}, using filename as fallback.`);
+    console.warn(
+      `⚠️ No 'label:' found in ${file}, using filename as fallback.`
+    );
   }
   if (!valueMatch) {
-    console.warn(`⚠️ No 'value:' found in ${file}, using filename as fallback.`);
+    console.warn(
+      `⚠️ No 'value:' found in ${file}, using filename as fallback.`
+    );
   }
 
-  const label = labelMatch?.[1]?.trim() ?? file.replace(".css", "");
-  const value = valueMatch?.[1]?.trim() ?? file.replace(".css", "");
+  const label = labelMatch?.[1]?.trim() ?? file.replace('.css', '');
+  const value = valueMatch?.[1]?.trim() ?? file.replace('.css', '');
 
-  const lightPrimaryMatch = content.match(/:root\[data-theme-preset="[^"]*"\][\s\S]*?--primary:\s*([^;]+);/);
-  const darkPrimaryMatch = content.match(/\.dark:root\[data-theme-preset="[^"]*"\][\s\S]*?--primary:\s*([^;]+);/);
+  const lightPrimaryMatch = content.match(
+    /:root\[data-theme-preset="[^"]*"\][\s\S]*?--primary:\s*([^;]+);/
+  );
+  const darkPrimaryMatch = content.match(
+    /\.dark:root\[data-theme-preset="[^"]*"\][\s\S]*?--primary:\s*([^;]+);/
+  );
 
   const primary = {
-    light: lightPrimaryMatch?.[1]?.trim() ?? "",
-    dark: darkPrimaryMatch?.[1]?.trim() ?? "",
+    light: lightPrimaryMatch?.[1]?.trim() ?? '',
+    dark: darkPrimaryMatch?.[1]?.trim() ?? '',
   };
 
   if (!lightPrimaryMatch || !darkPrimaryMatch) {
-    console.warn(`⚠️ Missing --primary for ${file} (light or dark). Check CSS syntax.`);
+    console.warn(
+      `⚠️ Missing --primary for ${file} (light or dark). Check CSS syntax.`
+    );
   }
 
   return { label, value, primary };
 });
 
-const globalStylesPath = path.resolve(__dirname, "../app/globals.css");
+const globalStylesPath = path.resolve(__dirname, '../app/globals.css');
 
-let globalContent = "";
+let globalContent = '';
 try {
-  globalContent = fs.readFileSync(globalStylesPath, "utf8");
+  globalContent = fs.readFileSync(globalStylesPath, 'utf8');
 } catch (err) {
   console.error(`❌ Could not read globals.css at ${globalStylesPath}`);
   console.error(err);
@@ -86,11 +98,15 @@ const defaultLightPrimaryMatch = defaultLightPrimaryRegex.exec(globalContent);
 const defaultDarkPrimaryMatch = defaultDarkPrimaryRegex.exec(globalContent);
 
 const defaultPrimary = {
-  light: defaultLightPrimaryMatch?.[1]?.trim() ?? "",
-  dark: defaultDarkPrimaryMatch?.[1]?.trim() ?? "",
+  light: defaultLightPrimaryMatch?.[1]?.trim() ?? '',
+  dark: defaultDarkPrimaryMatch?.[1]?.trim() ?? '',
 };
 
-presets.unshift({ label: "Default", value: "default", primary: defaultPrimary });
+presets.unshift({
+  label: 'Default',
+  value: 'default',
+  primary: defaultPrimary,
+});
 
 const generatedBlock = `// --- generated:themePresets:start ---
 
@@ -102,26 +118,26 @@ export type ThemePreset = (typeof THEME_PRESET_OPTIONS)[number]["value"];
 
 // --- generated:themePresets:end ---`;
 
-const fileContent = fs.readFileSync(outputPath, "utf8");
+const fileContent = fs.readFileSync(outputPath, 'utf8');
 
 const updated = fileContent.replace(
   /\/\/ --- generated:themePresets:start ---[\s\S]*?\/\/ --- generated:themePresets:end ---/,
-  generatedBlock,
+  generatedBlock
 );
 
 async function main() {
-  const formatted = await prettier.format(updated, { parser: "typescript" });
+  const formatted = await prettier.format(updated, { parser: 'typescript' });
 
   if (formatted === fileContent) {
-    console.log("ℹ️  No changes in theme.ts");
+    console.log('ℹ️  No changes in theme.ts');
     return;
   }
 
   fs.writeFileSync(outputPath, formatted);
-  console.log("✅ theme.ts updated with new theme presets");
+  console.log('✅ theme.ts updated with new theme presets');
 }
 
-main().catch((err) => {
-  console.error("❌ Unexpected error while generating theme presets:", err);
+main().catch(err => {
+  console.error('❌ Unexpected error while generating theme presets:', err);
   process.exit(1);
 });

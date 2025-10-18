@@ -1,12 +1,12 @@
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient } from '@supabase/ssr';
 
-import type { Database } from "./supabase";
+import type { Database } from './supabase';
 
-export type User = Database["public"]["Tables"]["users"]["Row"];
-export type UserRole = User["role"];
+export type User = Database['public']['Tables']['users']['Row'];
+export type UserRole = User['role'];
 
 // Server-side Supabase client for authentication
 export const createServerSupabaseClient = async () => {
@@ -24,10 +24,10 @@ export const createServerSupabaseClient = async () => {
           cookieStore.set({ name, value, ...options });
         },
         remove(name: string, options: Record<string, unknown>) {
-          cookieStore.set({ name, value: "", ...options });
+          cookieStore.set({ name, value: '', ...options });
         },
       },
-    },
+    }
   );
 };
 
@@ -45,9 +45,9 @@ export const getCurrentUser = async (): Promise<User | null> => {
   }
 
   const { data: user, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", authUser.id)
+    .from('users')
+    .select('*')
+    .eq('id', authUser.id)
     .single();
 
   if (error || !user) {
@@ -71,28 +71,28 @@ export const hasAnyRole = (user: User | null, roles: UserRole[]): boolean => {
 
 // Check if user is super admin
 export const isSuperAdmin = (user: User | null): boolean => {
-  return hasRole(user, "super_admin");
+  return hasRole(user, 'super_admin');
 };
 
 // Check if user is organization admin
 export const isOrgAdmin = (user: User | null): boolean => {
-  return hasRole(user, "org_admin");
+  return hasRole(user, 'org_admin');
 };
 
 // Check if user is mentor
 export const isMentor = (user: User | null): boolean => {
-  return hasRole(user, "mentor");
+  return hasRole(user, 'mentor');
 };
 
 // Check if user is learner
 export const isLearner = (user: User | null): boolean => {
-  return hasRole(user, "learner");
+  return hasRole(user, 'learner');
 };
 
 // Check if user can access organization
 export const canAccessOrganization = (
   user: User | null,
-  organizationId: string,
+  organizationId: string
 ): boolean => {
   if (!user) return false;
   if (isSuperAdmin(user)) return true;
@@ -101,13 +101,13 @@ export const canAccessOrganization = (
 
 // Middleware for protecting routes
 export const withAuth = (
-  handler: (req: NextRequest, user: User) => Promise<NextResponse>,
+  handler: (req: NextRequest, user: User) => Promise<NextResponse>
 ) => {
   return async (req: NextRequest) => {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     return handler(req, user);
@@ -121,11 +121,11 @@ export const withRole = (roles: UserRole[]) => {
       const user = await getCurrentUser();
 
       if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
       if (!hasAnyRole(user, roles)) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
 
       return handler(req, user);
@@ -135,22 +135,22 @@ export const withRole = (roles: UserRole[]) => {
 
 // Middleware for organization access control
 export const withOrganizationAccess = (
-  handler: (req: NextRequest, user: User) => Promise<NextResponse>,
+  handler: (req: NextRequest, user: User) => Promise<NextResponse>
 ) => {
   return async (req: NextRequest) => {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Extract organization ID from URL or request
     const url = new URL(req.url);
     const organizationId =
-      url.searchParams.get("organization_id") ?? url.pathname.split("/")[2]; // Assuming /api/organizations/{id}/...
+      url.searchParams.get('organization_id') ?? url.pathname.split('/')[2]; // Assuming /api/organizations/{id}/...
 
     if (organizationId && !canAccessOrganization(user, organizationId)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return handler(req, user);
@@ -161,7 +161,7 @@ export const withOrganizationAccess = (
 export const createJWTWithOrganization = (
   userId: string,
   organizationId: string,
-  role: UserRole,
+  role: UserRole
 ) => {
   // This would typically use a JWT library like jsonwebtoken
   // For now, we'll return a simple object that can be used for testing
@@ -179,10 +179,10 @@ export const validateJWT = (token: string) => {
   try {
     // In a real implementation, this would verify the JWT signature
     // For now, we'll return a mock validation
-    const payload = JSON.parse(atob(token.split(".")[1]));
+    const payload = JSON.parse(atob(token.split('.')[1]));
 
     if (payload.exp < Math.floor(Date.now() / 1000)) {
-      throw new Error("Token expired");
+      throw new Error('Token expired');
     }
 
     return {
@@ -191,7 +191,7 @@ export const validateJWT = (token: string) => {
       role: payload.role,
     };
   } catch {
-    throw new Error("Invalid token");
+    throw new Error('Invalid token');
   }
 };
 
@@ -214,6 +214,6 @@ export const logout = async () => {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    throw new Error("Failed to logout");
+    throw new Error('Failed to logout');
   }
 };

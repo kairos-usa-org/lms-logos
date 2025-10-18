@@ -89,6 +89,7 @@ Gamification MUST encourage mastery learning and positive streaks. Anti-gaming m
 ### Amendment Procedure
 
 Constitution amendments require:
+
 1. Written proposal with rationale and impact analysis
 2. 48-hour review period for team feedback
 3. Approval by project lead and technical architect
@@ -104,6 +105,7 @@ Constitution amendments require:
 ### Compliance Review
 
 All development work MUST be evaluated against these principles during:
+
 - Feature planning and design review
 - Code review and pull request approval
 - Security and accessibility audits
@@ -113,6 +115,7 @@ All development work MUST be evaluated against these principles during:
 ### Enforcement
 
 Violations of constitutional principles MUST be addressed through:
+
 1. Immediate remediation when possible
 2. Technical debt tracking for complex fixes
 3. Process improvements to prevent recurrence
@@ -120,4 +123,4 @@ Violations of constitutional principles MUST be addressed through:
 
 ---
 
-*This constitution serves as the foundational governance document for LogosLMS development. All team members, contributors, and stakeholders are expected to understand and adhere to these principles in all project activities.*
+_This constitution serves as the foundational governance document for LogosLMS development. All team members, contributors, and stakeholders are expected to understand and adhere to these principles in all project activities._
