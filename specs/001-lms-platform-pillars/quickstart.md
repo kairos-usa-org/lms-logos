@@ -1,268 +1,372 @@
-# LogosLMS Quickstart Guide
+# LogosLMS Platform Quickstart Guide
 
-## Overview
-
-This guide provides step-by-step instructions for setting up and using LogosLMS, a multi-tenant Learning Management System designed for Christian education organizations.
+**Version:** 1.0  
+**Generated:** 2025-10-18  
+**Updated:** 2025-10-18  
+**Project Start:** November 1, 2025  
+**Purpose:** Get started with LogosLMS development and deployment
 
 ## Prerequisites
 
-- Node.js 18+ and npm
-- Supabase account and project
+- Node.js 18+ and npm/yarn
+- Supabase account (project ref: sdxiwingetjnbxrkfpbg)
+- Resend account for email services
 - Git
+- Code editor (VS Code recommended)
 
-## Initial Setup
+## Development Setup
 
 ### 1. Clone and Install
 
 ```bash
-git clone <repository-url>
-cd LMS
+# Clone the repository
+git clone https://github.com/your-org/logoslms.git
+cd logoslms
+
+# Install dependencies
 npm install
+
+# Copy environment variables
+cp .env.example .env.local
 ```
 
 ### 2. Environment Configuration
 
-Create `.env.local` file:
+Create `.env.local` with the following variables:
 
 ```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# Supabase (Project: sdxiwingetjnbxrkfpbg)
+NEXT_PUBLIC_SUPABASE_URL="https://sdxiwingetjnbxrkfpbg.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 
-# Application Configuration
-NEXTAUTH_SECRET=your_nextauth_secret
-NEXTAUTH_URL=http://localhost:3000
+# AI Services
+OPENAI_API_KEY="your-openai-key"
+ANTHROPIC_API_KEY="your-anthropic-key"
+
+# App Configuration
+NEXTAUTH_SECRET="your-nextauth-secret"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Resend Email Service
+RESEND_API_KEY="re_your-resend-api-key"
+RESEND_FROM_EMAIL="noreply@yourdomain.com"
 ```
 
 ### 3. Database Setup
 
-Run the database migrations:
-
 ```bash
-# Apply the schema
+# Run Supabase migrations
 npx supabase db push
 
 # Seed initial data (creates super-admin)
 npm run db:seed
+
+# Verify Supabase connection
+npx supabase status
 ```
 
 ### 4. Start Development Server
 
 ```bash
+# Start the development server
 npm run dev
+
+# Open http://localhost:3000
 ```
 
-Visit `http://localhost:3000` to see the application.
+## Initial Setup
 
-## User Onboarding Flow
+### 1. Create Super-Admin Account
 
-### Step 1: Super-Admin Setup
+The database seeding creates a super-admin account:
+- **Email:** admin@logoslms.com
+- **Password:** admin123 (change immediately)
 
-1. **Initial Login**: Use the seeded super-admin credentials
-2. **Create Organization**: 
-   - Navigate to Organizations
-   - Click "Create Organization"
-   - Fill in organization details (name, slug, branding)
-   - Save organization
+### 2. Create First Organization
 
-3. **Assign Organization Admin**:
-   - Go to the new organization
-   - Click "Invite Users"
-   - Enter email and select "org_admin" role
-   - Send invitation
+1. Login as super-admin
+2. Navigate to Organizations
+3. Click "Create Organization"
+4. Fill in organization details:
+   - Name: Your Organization
+   - Slug: your-org
+   - Branding: Upload logo, set colors
+   - Theme: Choose theme preferences
 
-### Step 2: Organization Admin Setup
+### 3. Invite Organization Admin
 
-1. **Receive Invitation**: Check email for invitation link
-2. **Complete Registration**:
-   - Click invitation link
-   - Set password and complete profile
-   - Verify email address
+1. Go to Users section
+2. Click "Invite User"
+3. Enter admin email and select "org_admin" role
+4. User receives invitation email
 
-3. **Configure Organization**:
-   - Upload organization logo
-   - Set brand colors and theme
-   - Configure organization settings
+### 4. Organization Admin Setup
 
-4. **Invite Users**:
-   - Invite mentors and learners
-   - Create groups for organization
-   - Assign users to groups
-
-### Step 3: Mentor Setup
-
-1. **Receive Invitation**: Check email for invitation link
-2. **Complete Registration**: Set password and profile
-3. **Create Courses**:
-   - Navigate to "My Courses"
-   - Click "Create Course"
-   - Add course title and description
-   - Create lessons and quizzes
-
-4. **Use AI Assistance** (optional):
-   - Enable AI features in organization settings
-   - Use AI to generate course content
-   - Review and approve AI-generated content
-
-### Step 4: Learner Setup
-
-1. **Receive Invitation**: Check email for invitation link
-2. **Complete Registration**: Set password and profile
-3. **Browse Courses**:
-   - View available courses
-   - Enroll in courses of interest
-   - Start learning
-
-4. **Track Progress**:
-   - View motivation dashboard
-   - Earn points and badges
-   - See leaderboard position
-
-## Key Features
-
-### Multi-Tenancy
-
-- **Organization Isolation**: Each organization's data is completely isolated
-- **Organization Switching**: Users can belong to multiple organizations
-- **Custom Branding**: Each organization can customize their appearance
-
-### AI Integration
-
-- **Content Generation**: AI helps create courses, lessons, and quizzes
-- **Human Approval**: All AI content requires instructor approval
-- **Coaching**: AI provides personalized learning suggestions
-
-### Motivation System
-
-- **Points**: Earn points for course enrollment, lesson completion, quiz passes
-- **Badges**: 10-level badge system with clear criteria
-- **Leaderboards**: See how you rank within your organization
-
-### Accessibility
-
-- **WCAG AA Compliance**: Full keyboard navigation and screen reader support
-- **Elder-Friendly Design**: Large fonts, clear buttons, high contrast
-- **Scalable Text**: Text scales up to 200% without horizontal scrolling
+1. Click invitation link in email
+2. Set password and complete profile
+3. Configure organization settings
+4. Start inviting mentors and learners
 
 ## API Usage
 
 ### Authentication
 
-All API requests require a Bearer token in the Authorization header:
+```typescript
+// Login
+const response = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
 
-```bash
-curl -H "Authorization: Bearer your_jwt_token" \
-     https://api.logoslms.com/v1/auth/me
+const { user, token, organizationId } = await response.json();
 ```
 
-### Creating a Course
+### Organization Management
 
-```bash
-curl -X POST \
-     -H "Authorization: Bearer your_jwt_token" \
-     -H "Content-Type: application/json" \
-     -d '{"title": "Introduction to Faith", "description": "Basic course on Christian faith"}' \
-     https://api.logoslms.com/v1/courses
+```typescript
+// Create organization (super-admin only)
+const org = await fetch('/api/organizations', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'X-Organization-ID': organizationId,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'New Organization',
+    slug: 'new-org'
+  })
+});
 ```
 
-### Generating AI Content
+### Course Management
 
-```bash
-curl -X POST \
-     -H "Authorization: Bearer your_jwt_token" \
-     -H "Content-Type: application/json" \
-     -d '{"content_type": "lesson", "prompt": "Create a lesson about prayer"}' \
-     https://api.logoslms.com/v1/ai/content/generate
+```typescript
+// Create course
+const course = await fetch('/api/courses', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'X-Organization-ID': organizationId,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: 'Introduction to Faith',
+    description: 'Basic course on Christian faith',
+    content: {
+      lessons: [],
+      quizzes: [],
+      metadata: {
+        estimatedDuration: 120,
+        learningObjectives: ['Understand basic concepts']
+      }
+    }
+  })
+});
+```
+
+### AI Integration
+
+```typescript
+// Generate AI content
+const aiContent = await fetch('/api/ai/content/generate', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'X-Organization-ID': organizationId,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    type: 'lesson',
+    topic: 'The Trinity',
+    difficulty: 'beginner',
+    context: 'Christian education course'
+  })
+});
 ```
 
 ## Development Workflow
 
-### Adding New Features
+### 1. Feature Development
 
-1. **Update Specification**: Modify `spec.md` with new requirements
-2. **Update Data Model**: Add entities to `data-model.md`
-3. **Update API Contracts**: Modify `contracts/openapi.yaml`
-4. **Implement Feature**: Follow the implementation plan
-5. **Test**: Ensure all tests pass
-6. **Document**: Update this quickstart guide
+```bash
+# Create feature branch
+git checkout -b feature/new-feature
 
-### Database Changes
+# Make changes
+# ... implement feature ...
 
-1. **Create Migration**: Add new migration file
-2. **Update Schema**: Modify database schema
-3. **Update RLS Policies**: Ensure tenant isolation
-4. **Test**: Verify multi-tenant isolation
+# Run tests
+npm run test
 
-### AI Integration
+# Run linting
+npm run lint
 
-1. **Choose Provider**: Select AI service (OpenAI, Anthropic, local)
-2. **Implement Interface**: Use abstract AI service interface
-3. **Add Approval Workflow**: Ensure human validation
-4. **Test**: Verify content quality and safety
+# Commit changes
+git add .
+git commit -m "feat: add new feature"
+git push origin feature/new-feature
+```
+
+### 2. Database Changes
+
+```bash
+# Create Supabase migration
+npx supabase migration new add_new_table
+
+# Edit migration file
+# ... add SQL ...
+
+# Apply migration
+npx supabase db push
+
+# Generate TypeScript types
+npx supabase gen types typescript --project-id sdxiwingetjnbxrkfpbg > types/supabase.ts
+```
+
+### 3. Testing
+
+```bash
+# Run all tests
+npm run test
+
+# Run specific test suite
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+
+# Run with coverage
+npm run test:coverage
+```
+
+## Deployment
+
+### 1. Production Build
+
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+### 2. Environment Variables
+
+Set the following production environment variables:
+
+```env
+# Production Supabase (Project: sdxiwingetjnbxrkfpbg)
+NEXT_PUBLIC_SUPABASE_URL="https://sdxiwingetjnbxrkfpbg.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="prod-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="prod-service-role-key"
+
+# Production Resend
+RESEND_API_KEY="re_prod-resend-api-key"
+RESEND_FROM_EMAIL="noreply@yourdomain.com"
+
+# Production URLs
+NEXTAUTH_URL="https://your-domain.com"
+```
+
+### 3. Database Migration
+
+```bash
+# Run production Supabase migrations
+npx supabase db push --project-ref sdxiwingetjnbxrkfpbg
+
+# Verify migration status
+npx supabase migration list --project-ref sdxiwingetjnbxrkfpbg
+```
+
+## Monitoring and Maintenance
+
+### 1. Health Checks
+
+```bash
+# Check application health
+curl https://your-domain.com/api/health
+
+# Check database connectivity
+curl https://your-domain.com/api/health/db
+```
+
+### 2. Logs
+
+```bash
+# View application logs
+npm run logs
+
+# View specific service logs
+npm run logs:api
+npm run logs:db
+```
+
+### 3. Performance Monitoring
+
+- Lighthouse scores: Run `npm run lighthouse`
+- Database performance: Check slow query logs
+- API response times: Monitor via `/api/metrics`
 
 ## Troubleshooting
 
 ### Common Issues
 
 **Database Connection Failed**
-- Check Supabase credentials in `.env.local`
-- Verify Supabase project is active
-- Ensure database migrations are applied
+```bash
+# Check database status
+npm run db:status
 
-**Authentication Errors**
-- Verify JWT token is valid and not expired
-- Check organization_id is present in token
-- Ensure user has proper role permissions
+# Reset database
+npm run db:reset
+```
 
-**Multi-Tenant Data Leaks**
-- Verify RLS policies are enabled
-- Check cache keys include organization_id
-- Test with multiple organizations
+**Authentication Issues**
+```bash
+# Check JWT token
+npm run auth:verify-token
 
-**AI Content Not Generating**
-- Check AI provider credentials
-- Verify organization has AI features enabled
-- Ensure content is pending approval
+# Reset user sessions
+npm run auth:reset-sessions
+```
 
-### Getting Help
+**AI Service Errors**
+```bash
+# Test AI connectivity
+npm run ai:test-connection
 
-- Check the API documentation at `/api/docs`
-- Review the data model in `data-model.md`
-- Contact support at support@logoslms.com
+# Check API keys
+npm run ai:check-keys
+```
 
-## Security Considerations
+### Debug Mode
 
-### Data Protection
+```bash
+# Enable debug logging
+DEBUG=logoslms:* npm run dev
 
-- All data is encrypted at rest using Supabase encryption
-- RLS policies prevent cross-tenant data access
-- Audit logs track all admin actions
-- GDPR compliance for data handling
+# Enable database query logging
+DEBUG=logoslms:db npm run dev
+```
 
-### Best Practices
+## Support
 
-- Use strong passwords (minimum 8 characters)
-- Enable two-factor authentication when available
-- Regularly review user permissions
-- Monitor audit logs for suspicious activity
+- **Documentation:** [docs.logoslms.com](https://docs.logoslms.com)
+- **Issues:** [GitHub Issues](https://github.com/your-org/logoslms/issues)
+- **Discord:** [Community Server](https://discord.gg/logoslms)
+- **Email:** support@logoslms.com
 
-## Performance Optimization
+## Next Steps
 
-### Caching
+1. **Read the full documentation** in `/docs`
+2. **Explore the API** using the OpenAPI spec in `/contracts`
+3. **Check the data model** in `data-model.md`
+4. **Review the implementation plan** in `plan.md`
+5. **Start with Phase 1 tasks** in `tasks.md`
 
-- Organization-specific cache keys prevent data leaks
-- Cache frequently accessed data
-- Use CDN for static assets
-
-### Database
-
-- Proper indexing on organization_id and created_at
-- Optimize queries for multi-tenant access
-- Regular performance monitoring
-
-### Frontend
-
-- Code splitting by user role
-- Lazy loading for non-critical components
-- Image optimization with Next.js Image component
+Happy coding! 🚀

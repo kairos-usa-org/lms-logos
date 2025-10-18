@@ -15,8 +15,8 @@ Follow-up TODOs: None
 # LogosLMS Project Constitution
 
 **Version:** 1.0.0  
-**Ratification Date:** 2024-12-19  
-**Last Amended Date:** 2024-12-19
+**Ratification Date:** 2025-10-19  
+**Last Amended Date:** 2025-10-19
 
 ## Project Overview
 

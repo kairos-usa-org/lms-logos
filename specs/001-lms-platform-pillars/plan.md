@@ -18,7 +18,7 @@ This plan MUST align with LogosLMS constitution principles:
 
 **Project Name:** LogosLMS Platform with Three Pillars  
 **Version:** 1.0  
-**Timeline:** 2025-12-19 - 2026-03-19 (12 weeks)  
+**Timeline:** 2025-11-01 - 2026-01-24 (12 weeks)  
 **Team:** Development Team
 
 ## Objectives
@@ -57,23 +57,24 @@ This plan MUST align with LogosLMS constitution principles:
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Weeks 1-3)
+### Phase 1: Foundation (Weeks 1-3: Nov 1-21, 2025)
 - [ ] Set up Next.js 15 project with TypeScript and Tailwind CSS v4
-- [ ] Configure Supabase project with RLS policies
-- [ ] Implement multi-tenant database schema
-- [ ] Create authentication system with organization context
+- [ ] Configure Supabase project (ref: sdxiwingetjnbxrkfpbg) with RLS policies
+- [ ] Implement multi-tenant database schema in Supabase
+- [ ] Create authentication system with organization context using Supabase Auth
 - [ ] Set up basic UI components with Shadcn UI
 - [ ] Implement organization setup wizard for super-admin
+- [ ] Configure Resend for email services
 
-### Phase 2: Core LMS Features (Weeks 4-7)
-- [ ] Build course creation and management system
-- [ ] Implement user invitation and role management
+### Phase 2: Core LMS Features (Weeks 4-7: Nov 22 - Dec 19, 2025)
+- [ ] Build course creation and management system using Supabase
+- [ ] Implement user invitation and role management with Resend email integration
 - [ ] Create profile management for all user types
 - [ ] Develop lesson and quiz functionality
 - [ ] Build enrollment and progress tracking
 - [ ] Implement organization branding and theming
 
-### Phase 3: AI & Motivation System (Weeks 8-10)
+### Phase 3: AI & Motivation System (Weeks 8-10: Dec 20, 2025 - Jan 9, 2026)
 - [ ] Create abstract AI service interface
 - [ ] Implement AI content generation with approval workflow
 - [ ] Build AI coaching features for learners
@@ -81,7 +82,7 @@ This plan MUST align with LogosLMS constitution principles:
 - [ ] Create leaderboards and progress visualization
 - [ ] Implement AI content approval interface
 
-### Phase 4: Testing & Polish (Weeks 11-12)
+### Phase 4: Testing & Polish (Weeks 11-12: Jan 10-24, 2026)
 - [ ] Comprehensive testing (unit, integration, accessibility)
 - [ ] Performance optimization and monitoring setup
 - [ ] Security audit and penetration testing

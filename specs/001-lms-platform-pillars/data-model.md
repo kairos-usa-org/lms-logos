@@ -1,279 +1,345 @@
-# Data Model Specification
+# LogosLMS Data Model
 
-## Overview
-
-This document defines the data model for LogosLMS, a multi-tenant Learning Management System designed for Christian education organizations. All entities include `organization_id` for strict tenant isolation.
+**Generated:** 2025-10-18  
+**Updated:** 2025-10-18  
+**Purpose:** Define database schema, entities, relationships, and validation rules for LogosLMS platform  
+**Database:** Supabase PostgreSQL (Project: sdxiwingetjnbxrkfpbg)
 
 ## Core Entities
 
 ### Organizations
+**Purpose:** Multi-tenant root entity for data isolation
 
-**Purpose:** Root entity for multi-tenancy, represents a faith-based organization using the platform.
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique organization identifier |
+| name | TEXT | NOT NULL | Organization display name |
+| slug | TEXT | UNIQUE, NOT NULL | URL-friendly organization identifier |
+| branding_config | JSONB | | Logo, colors, custom branding settings |
+| theme_config | JSONB | | UI theme preferences and customizations |
+| created_at | TIMESTAMP | DEFAULT NOW() | Organization creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last modification timestamp |
 
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `name` (TEXT, NOT NULL): Organization display name
-- `slug` (TEXT, UNIQUE, NOT NULL): URL-friendly identifier
-- `branding_config` (JSONB): Logo, colors, custom CSS
-- `theme_config` (JSONB): UI theme preferences
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
-- `updated_at` (TIMESTAMP WITH TIME ZONE): Last modification timestamp
-
-**Validation Rules:**
-- Slug must be unique across all organizations
-- Name cannot be empty or whitespace-only
-- Branding config must be valid JSON
-
-**State Transitions:**
-- Created → Active (immediate)
-- Active → Suspended (admin action)
-- Suspended → Active (admin action)
+**Relationships:**
+- One-to-many with Users
+- One-to-many with Groups
+- One-to-many with Courses
+- One-to-many with Badges
 
 ### Users
+**Purpose:** User accounts with role-based access control
 
-**Purpose:** Represents all users in the system with role-based access control.
-
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `email` (TEXT, UNIQUE, NOT NULL): User's email address
-- `organization_id` (UUID, Foreign Key): Associated organization
-- `role` (TEXT, NOT NULL): User role (super_admin, org_admin, mentor, learner)
-- `profile_data` (JSONB): Name, avatar, preferences, bio
-- `points` (INTEGER, DEFAULT 0): Motivation system points
-- `level` (INTEGER, DEFAULT 1): Motivation system level (1-10)
-- `created_at` (TIMESTAMP WITH TIME ZONE): Account creation
-- `updated_at` (TIMESTAMP WITH TIME ZONE): Last profile update
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique user identifier |
+| email | TEXT | UNIQUE, NOT NULL | User email address |
+| organization_id | UUID | FOREIGN KEY, NOT NULL | Parent organization |
+| role | TEXT | CHECK constraint | User role: super_admin, org_admin, mentor, learner |
+| profile_data | JSONB | | User profile information |
+| points | INTEGER | DEFAULT 0 | Gamification points |
+| level | INTEGER | DEFAULT 1 | User level (1-10) |
+| created_at | TIMESTAMP | DEFAULT NOW() | Account creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last modification timestamp |
 
 **Validation Rules:**
-- Email must be valid format and unique
+- Email format validation
 - Role must be one of: super_admin, org_admin, mentor, learner
 - Points must be non-negative
 - Level must be between 1 and 10
-- Super admin can only exist once globally
 
-**State Transitions:**
-- Invited → Pending (email sent)
-- Pending → Active (email verification)
-- Active → Suspended (admin action)
-- Suspended → Active (admin action)
+**Relationships:**
+- Many-to-one with Organizations
+- One-to-many with CourseEnrollments
+- One-to-many with UserBadges
+- One-to-many with Courses (as creator)
 
 ### Groups
+**Purpose:** Organization-level user grouping for management
 
-**Purpose:** Organizational units within an organization for user management.
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique group identifier |
+| organization_id | UUID | FOREIGN KEY, NOT NULL | Parent organization |
+| name | TEXT | NOT NULL | Group display name |
+| description | TEXT | | Group description |
+| created_at | TIMESTAMP | DEFAULT NOW() | Group creation timestamp |
 
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `organization_id` (UUID, Foreign Key): Parent organization
-- `name` (TEXT, NOT NULL): Group display name
-- `description` (TEXT): Optional group description
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
-
-**Validation Rules:**
-- Name cannot be empty
-- Name must be unique within organization
+**Relationships:**
+- Many-to-one with Organizations
+- Many-to-many with Users (through GroupMemberships)
 
 ### Courses
+**Purpose:** Educational content containers
 
-**Purpose:** Educational content containers with lessons and assessments.
-
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `organization_id` (UUID, Foreign Key): Parent organization
-- `title` (TEXT, NOT NULL): Course title
-- `description` (TEXT): Course description
-- `content` (JSONB): Course structure, lessons, quizzes
-- `created_by` (UUID, Foreign Key): Course author
-- `status` (TEXT, DEFAULT 'draft'): Course status (draft, published, archived)
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
-- `updated_at` (TIMESTAMP WITH TIME ZONE): Last modification
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique course identifier |
+| organization_id | UUID | FOREIGN KEY, NOT NULL | Parent organization |
+| title | TEXT | NOT NULL | Course title |
+| description | TEXT | | Course description |
+| content | JSONB | | Course structure and content |
+| created_by | UUID | FOREIGN KEY, NOT NULL | Course creator |
+| status | TEXT | DEFAULT 'draft' | Course status: draft, published, archived |
+| created_at | TIMESTAMP | DEFAULT NOW() | Course creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last modification timestamp |
 
 **Validation Rules:**
-- Title cannot be empty
+- Title must not be empty
 - Status must be one of: draft, published, archived
 - Content must be valid JSON structure
 
-**State Transitions:**
-- Draft → Published (author action)
-- Published → Archived (author action)
-- Archived → Published (author action)
+**Relationships:**
+- Many-to-one with Organizations
+- Many-to-one with Users (as creator)
+- One-to-many with Lessons
+- One-to-many with Quizzes
+- One-to-many with CourseEnrollments
 
 ### Lessons
+**Purpose:** Individual learning units within courses
 
-**Purpose:** Individual learning units within courses.
-
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `course_id` (UUID, Foreign Key): Parent course
-- `organization_id` (UUID, Foreign Key): Parent organization (denormalized)
-- `title` (TEXT, NOT NULL): Lesson title
-- `content` (JSONB): Lesson content, media, instructions
-- `order_index` (INTEGER): Display order within course
-- `created_by` (UUID, Foreign Key): Lesson author
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
-- `updated_at` (TIMESTAMP WITH TIME ZONE): Last modification
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique lesson identifier |
+| course_id | UUID | FOREIGN KEY, NOT NULL | Parent course |
+| title | TEXT | NOT NULL | Lesson title |
+| content | JSONB | | Lesson content and structure |
+| order_index | INTEGER | NOT NULL | Display order within course |
+| created_at | TIMESTAMP | DEFAULT NOW() | Lesson creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last modification timestamp |
 
 **Validation Rules:**
-- Title cannot be empty
+- Title must not be empty
 - Order index must be non-negative
-- Content must be valid JSON
+- Content must be valid JSON structure
+
+**Relationships:**
+- Many-to-one with Courses
+- One-to-many with LessonProgress
 
 ### Quizzes
+**Purpose:** Assessment tools within courses
 
-**Purpose:** Assessments within courses for learner evaluation.
-
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `course_id` (UUID, Foreign Key): Parent course
-- `organization_id` (UUID, Foreign Key): Parent organization (denormalized)
-- `title` (TEXT, NOT NULL): Quiz title
-- `questions` (JSONB): Quiz questions and answers
-- `passing_score` (INTEGER, DEFAULT 70): Required score to pass (percentage)
-- `time_limit` (INTEGER): Time limit in minutes (optional)
-- `created_by` (UUID, Foreign Key): Quiz author
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
-- `updated_at` (TIMESTAMP WITH TIME ZONE): Last modification
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique quiz identifier |
+| course_id | UUID | FOREIGN KEY, NOT NULL | Parent course |
+| title | TEXT | NOT NULL | Quiz title |
+| questions | JSONB | | Quiz questions and answers |
+| passing_score | INTEGER | DEFAULT 70 | Minimum score to pass (percentage) |
+| time_limit | INTEGER | | Time limit in minutes (optional) |
+| created_at | TIMESTAMP | DEFAULT NOW() | Quiz creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last modification timestamp |
 
 **Validation Rules:**
-- Title cannot be empty
+- Title must not be empty
 - Passing score must be between 0 and 100
 - Time limit must be positive if specified
 - Questions must be valid JSON structure
 
-### Enrollments
+**Relationships:**
+- Many-to-one with Courses
+- One-to-many with QuizSubmissions
 
-**Purpose:** Tracks learner enrollment in courses and progress.
+### CourseEnrollments
+**Purpose:** User enrollment tracking in courses
 
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `user_id` (UUID, Foreign Key): Enrolled learner
-- `course_id` (UUID, Foreign Key): Enrolled course
-- `organization_id` (UUID, Foreign Key): Parent organization (denormalized)
-- `enrolled_at` (TIMESTAMP WITH TIME ZONE): Enrollment timestamp
-- `completed_at` (TIMESTAMP WITH TIME ZONE): Completion timestamp (nullable)
-- `progress` (JSONB): Lesson completion status, quiz scores
-- `points_earned` (INTEGER, DEFAULT 0): Points earned from this course
-
-**Validation Rules:**
-- User and course must belong to same organization
-- Progress must be valid JSON structure
-- Points earned must be non-negative
-
-### AI Content
-
-**Purpose:** Tracks AI-generated content requiring human approval.
-
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `organization_id` (UUID, Foreign Key): Parent organization
-- `content_type` (TEXT, NOT NULL): Type of content (lesson, quiz, course_description)
-- `content_data` (JSONB): Generated content
-- `prompt_used` (TEXT): AI prompt that generated content
-- `ai_provider` (TEXT): AI service used (openai, anthropic, local)
-- `status` (TEXT, DEFAULT 'pending'): Approval status (pending, approved, rejected)
-- `reviewed_by` (UUID, Foreign Key): Reviewer (nullable)
-- `reviewed_at` (TIMESTAMP WITH TIME ZONE): Review timestamp (nullable)
-- `created_by` (UUID, Foreign Key): Content requester
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique enrollment identifier |
+| user_id | UUID | FOREIGN KEY, NOT NULL | Enrolled user |
+| course_id | UUID | FOREIGN KEY, NOT NULL | Enrolled course |
+| enrolled_at | TIMESTAMP | DEFAULT NOW() | Enrollment timestamp |
+| completed_at | TIMESTAMP | | Completion timestamp (null if not completed) |
+| progress_percentage | INTEGER | DEFAULT 0 | Completion percentage (0-100) |
 
 **Validation Rules:**
-- Content type must be valid
-- Status must be one of: pending, approved, rejected
-- If approved/rejected, reviewed_by and reviewed_at must be set
+- Progress percentage must be between 0 and 100
+- Completed_at must be after enrolled_at if not null
+- Unique constraint on (user_id, course_id)
 
-**State Transitions:**
-- Pending → Approved (reviewer action)
-- Pending → Rejected (reviewer action)
+**Relationships:**
+- Many-to-one with Users
+- Many-to-one with Courses
 
 ### Badges
+**Purpose:** Achievement recognition system
 
-**Purpose:** Achievement system for motivation and recognition.
-
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `organization_id` (UUID, Foreign Key): Parent organization
-- `name` (TEXT, NOT NULL): Badge name
-- `description` (TEXT): Badge description
-- `icon_url` (TEXT): Badge icon URL
-- `criteria` (JSONB): Requirements to earn badge
-- `level` (INTEGER): Badge level (1-10)
-- `created_at` (TIMESTAMP WITH TIME ZONE): Creation timestamp
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique badge identifier |
+| organization_id | UUID | FOREIGN KEY, NOT NULL | Parent organization |
+| name | TEXT | NOT NULL | Badge name |
+| description | TEXT | | Badge description |
+| icon_url | TEXT | | Badge icon URL |
+| points_required | INTEGER | DEFAULT 0 | Points required to earn badge |
+| level | INTEGER | DEFAULT 1 | Badge level (1-10) |
+| created_at | TIMESTAMP | DEFAULT NOW() | Badge creation timestamp |
 
 **Validation Rules:**
-- Name cannot be empty
+- Name must not be empty
+- Points required must be non-negative
 - Level must be between 1 and 10
-- Criteria must be valid JSON
 
-### User Badges
+**Relationships:**
+- Many-to-one with Organizations
+- Many-to-many with Users (through UserBadges)
 
-**Purpose:** Tracks which users have earned which badges.
+### UserBadges
+**Purpose:** User badge achievements
 
-**Fields:**
-- `id` (UUID, Primary Key): Unique identifier
-- `user_id` (UUID, Foreign Key): User who earned badge
-- `badge_id` (UUID, Foreign Key): Badge earned
-- `organization_id` (UUID, Foreign Key): Parent organization (denormalized)
-- `earned_at` (TIMESTAMP WITH TIME ZONE): When badge was earned
-- `points_awarded` (INTEGER): Points awarded with badge
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique achievement identifier |
+| user_id | UUID | FOREIGN KEY, NOT NULL | User who earned badge |
+| badge_id | UUID | FOREIGN KEY, NOT NULL | Earned badge |
+| earned_at | TIMESTAMP | DEFAULT NOW() | Achievement timestamp |
 
 **Validation Rules:**
-- User and badge must belong to same organization
-- Points awarded must be non-negative
+- Unique constraint on (user_id, badge_id)
 
-## Relationships
+**Relationships:**
+- Many-to-one with Users
+- Many-to-one with Badges
 
-### One-to-Many
-- Organization → Users
-- Organization → Groups
-- Organization → Courses
-- Organization → Badges
-- Course → Lessons
-- Course → Quizzes
-- User → Enrollments
-- User → User Badges
+### AuditLogs
+**Purpose:** System audit trail for compliance and security
 
-### Many-to-Many
-- Users ↔ Groups (through group_members table)
-- Users ↔ Courses (through Enrollments)
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique log identifier |
+| timestamp | TIMESTAMP | DEFAULT NOW() | Event timestamp |
+| user_id | UUID | FOREIGN KEY | User who performed action |
+| organization_id | UUID | FOREIGN KEY | Organization context |
+| action | TEXT | NOT NULL | Action performed |
+| resource_type | TEXT | | Type of resource affected |
+| resource_id | UUID | | ID of resource affected |
+| details | JSONB | | Additional event details |
+| ip_address | TEXT | | User IP address |
+| user_agent | TEXT | | User agent string |
+| outcome | TEXT | NOT NULL | Action outcome: success, failure, error |
 
-## Multi-Tenancy Implementation
+**Validation Rules:**
+- Action must not be empty
+- Outcome must be one of: success, failure, error
+- Details must be valid JSON structure
 
-### Row Level Security (RLS)
-All tables have RLS enabled with policies that filter by `organization_id`:
+**Relationships:**
+- Many-to-one with Users
+- Many-to-one with Organizations
 
+## Row Level Security (RLS) Policies
+
+### Organizations
 ```sql
--- Example RLS policy
-CREATE POLICY "Users can only see their organization's data" ON users
-  FOR ALL USING (organization_id = current_setting('app.current_organization_id')::UUID);
+-- Super-admins can see all organizations
+CREATE POLICY "Super admins can see all organizations" ON organizations
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM users 
+      WHERE users.id = auth.uid() 
+      AND users.role = 'super_admin'
+    )
+  );
+
+-- Organization admins can see their organization
+CREATE POLICY "Organization admins can see their organization" ON organizations
+  FOR ALL USING (
+    id IN (
+      SELECT organization_id FROM users 
+      WHERE users.id = auth.uid() 
+      AND users.role = 'org_admin'
+    )
+  );
 ```
 
-### Cache Key Strategy
-All cached data uses organization-specific keys:
+### Users
+```sql
+-- Users can only see users in their organization
+CREATE POLICY "Users can only see their organization's users" ON users
+  FOR ALL USING (
+    organization_id = (
+      SELECT organization_id FROM users 
+      WHERE users.id = auth.uid()
+    )
+  );
 ```
-{organization_id}:{resource_type}:{resource_id}
+
+### Courses
+```sql
+-- Users can only see courses in their organization
+CREATE POLICY "Users can only see their organization's courses" ON courses
+  FOR ALL USING (
+    organization_id = (
+      SELECT organization_id FROM users 
+      WHERE users.id = auth.uid()
+    )
+  );
 ```
 
-### JWT Context
-JWT tokens include `organization_id` in custom claims for request context.
-
-## Data Volume Assumptions
-
-- Organizations: 10-100 (small to medium faith-based organizations)
-- Users per organization: 50-500
-- Courses per organization: 10-100
-- Lessons per course: 5-20
-- Quizzes per course: 2-10
-- Total concurrent users: 1,000 per organization
-
-## Indexing Strategy
-
-### Primary Indexes
-- All tables: `(organization_id, created_at)`
-- Users: `(email)` (unique)
-- Organizations: `(slug)` (unique)
-- Enrollments: `(user_id, course_id)` (unique)
+## Indexes
 
 ### Performance Indexes
-- Courses: `(organization_id, status, created_at)`
-- Lessons: `(course_id, order_index)`
-- Quizzes: `(course_id, created_at)`
-- AI Content: `(organization_id, status, created_at)`
+```sql
+-- Organization-based queries
+CREATE INDEX idx_users_organization_id ON users(organization_id);
+CREATE INDEX idx_courses_organization_id ON courses(organization_id);
+CREATE INDEX idx_groups_organization_id ON groups(organization_id);
+
+-- User role queries
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_organization_role ON users(organization_id, role);
+
+-- Course enrollment queries
+CREATE INDEX idx_enrollments_user_id ON course_enrollments(user_id);
+CREATE INDEX idx_enrollments_course_id ON course_enrollments(course_id);
+
+-- Audit log queries
+CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX idx_audit_logs_organization_id ON audit_logs(organization_id);
+CREATE INDEX idx_audit_logs_timestamp ON audit_logs(timestamp);
+```
+
+## Data Validation Rules
+
+### Application-Level Validation
+- Email format validation using regex
+- Password strength requirements (8+ characters, mixed case, numbers)
+- Organization slug format (lowercase, alphanumeric, hyphens only)
+- JSON content validation for structured fields
+- File upload size and type restrictions
+
+### Database-Level Validation
+- CHECK constraints on enum-like fields
+- FOREIGN KEY constraints for referential integrity
+- UNIQUE constraints for business rules
+- NOT NULL constraints for required fields
+
+## State Transitions
+
+### Course Status
+- draft → published (by course creator)
+- published → archived (by course creator or org admin)
+- archived → published (by course creator or org admin)
+
+### User Enrollment
+- enrolled → in_progress (automatic on first lesson access)
+- in_progress → completed (when all lessons completed and quizzes passed)
+
+### Badge Achievement
+- available → earned (when user meets requirements)
+- earned → permanent (cannot be revoked)
+
+## Data Migration Strategy
+
+### Initial Data
+- Super-admin user creation
+- Default organization setup
+- System badges creation
+- Audit log table initialization
+
+### Future Migrations
+- Schema versioning in migration files
+- Backward compatibility for API changes
+- Data transformation scripts for breaking changes
+- Rollback procedures for failed migrations

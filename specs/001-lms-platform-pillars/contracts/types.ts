@@ -1,223 +1,32 @@
-// API Types for LogosLMS
-// Generated from OpenAPI specification
+/**
+ * LogosLMS Platform TypeScript Types
+ * Generated: 2025-10-18
+ * Purpose: Type definitions for API contracts and data models
+ */
 
-export type UserRole = 'super_admin' | 'org_admin' | 'mentor' | 'learner';
-export type CourseStatus = 'draft' | 'published' | 'archived';
+// Base types
+export type UUID = string;
+export type Timestamp = string; // ISO 8601 format
 
-// Authentication Types
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  name: string;
-}
+// User roles
+export type UserRole = "super_admin" | "org_admin" | "mentor" | "learner";
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+// Course status
+export type CourseStatus = "draft" | "published" | "archived";
 
-export interface AuthResponse {
-  user: User;
-  token: string;
-  refreshToken: string;
-}
+// AI content types
+export type ContentType = "lesson" | "quiz" | "assignment" | "explanation";
+export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
+export type LearningStyle = "visual" | "auditory" | "kinesthetic" | "reading";
 
-// User Types
-export interface User {
-  id: string;
-  email: string;
-  organization_id: string;
-  role: UserRole;
-  profile_data: {
-    name: string;
-    avatar?: string;
-  };
-  points: number;
-  level: number;
-  created_at: string;
-  updated_at: string;
-}
+// Audit log outcomes
+export type AuditOutcome = "success" | "failure" | "error";
 
-export interface UpdateProfileRequest {
-  name?: string;
-  avatar?: string;
-}
-
-// Organization Types
-export interface Organization {
-  id: string;
-  name: string;
-  slug: string;
-  domain?: string;
-  branding_config?: {
-    logo?: string;
-    primary_color?: string;
-    secondary_color?: string;
-  };
-  theme_config?: {
-    css_variables?: Record<string, string>;
-    tailwind_tokens?: Record<string, string>;
-  };
-  settings?: {
-    ai_enabled?: boolean;
-    gamification_enabled?: boolean;
-    features?: string[];
-  };
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreateOrganizationRequest {
-  name: string;
-  slug: string;
-  domain?: string;
-  branding_config?: Organization['branding_config'];
-  theme_config?: Organization['theme_config'];
-}
-
-export interface UpdateOrganizationRequest {
-  name?: string;
-  branding_config?: Organization['branding_config'];
-  theme_config?: Organization['theme_config'];
-  settings?: Organization['settings'];
-}
-
-// Course Types
-export interface Course {
-  id: string;
-  organization_id: string;
-  title: string;
-  description?: string;
-  content: {
-    lessons?: Lesson[];
-    metadata?: Record<string, any>;
-  };
-  status: CourseStatus;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Lesson {
-  id: string;
-  course_id: string;
-  title: string;
-  content: {
-    type: 'text' | 'video' | 'quiz' | 'assignment';
-    data: any;
-  };
-  order_index: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreateCourseRequest {
-  title: string;
-  description?: string;
-  content?: Course['content'];
-}
-
-export interface UpdateCourseRequest {
-  title?: string;
-  description?: string;
-  content?: Course['content'];
-  status?: CourseStatus;
-}
-
-// Enrollment Types
-export interface Enrollment {
-  id: string;
-  user_id: string;
-  course_id: string;
-  enrolled_at: string;
-  completed_at?: string;
-  progress: {
-    lessons_completed: number;
-    total_lessons: number;
-    quiz_scores: Record<string, number>;
-    last_accessed_at: string;
-  };
-}
-
-// Invitation Types
-export interface InviteUserRequest {
-  email: string;
-  role: Exclude<UserRole, 'super_admin'>;
-}
-
-export interface Invitation {
-  id: string;
-  organization_id: string;
-  email: string;
-  role: Exclude<UserRole, 'super_admin'>;
-  token: string;
-  expires_at: string;
-  created_at: string;
-}
-
-// AI Coaching Types
-export interface AnalyzeProgressRequest {
-  user_id: string;
-  course_id?: string;
-}
-
-export interface ProgressAnalysis {
-  strengths: string[];
-  weaknesses: string[];
-  recommendations: string[];
-  confidence_score: number;
-}
-
-export interface SuggestRequest {
-  user_id: string;
-  context?: string;
-}
-
-export interface LearningSuggestions {
-  next_lessons: string[];
-  study_techniques: string[];
-  resources: string[];
-}
-
-// Gamification Types
-export interface LeaderboardEntry {
-  user_id: string;
-  name: string;
-  points: number;
-  level: number;
-  rank: number;
-}
-
-export interface Leaderboard {
-  users: LeaderboardEntry[];
-}
-
-export interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  earned_at: string;
-}
-
-// API Response Types
+// API response types
 export interface ApiResponse<T> {
   data: T;
   message?: string;
-}
-
-export interface ApiError {
-  error: string;
-  message: string;
-  details?: Record<string, any>;
-}
-
-// Pagination Types
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
-  sort?: string;
-  order?: 'asc' | 'desc';
+  success: boolean;
 }
 
 export interface PaginatedResponse<T> {
@@ -226,105 +35,479 @@ export interface PaginatedResponse<T> {
     page: number;
     limit: number;
     total: number;
-    total_pages: number;
+    totalPages: number;
   };
 }
 
-// Multi-tenant Context
-export interface TenantContext {
-  organization_id: string;
-  user_id: string;
+// User types
+export interface User {
+  id: UUID;
+  email: string;
+  role: UserRole;
+  organizationId: UUID;
+  profileData: UserProfileData;
+  points: number;
+  level: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface UserProfileData {
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  preferences?: UserPreferences;
+}
+
+export interface UserPreferences {
+  theme?: "light" | "dark" | "auto";
+  notifications?: NotificationSettings;
+  accessibility?: AccessibilitySettings;
+}
+
+export interface NotificationSettings {
+  email: boolean;
+  push: boolean;
+  courseUpdates: boolean;
+  aiCoaching: boolean;
+  achievements: boolean;
+}
+
+export interface AccessibilitySettings {
+  highContrast: boolean;
+  largeText: boolean;
+  screenReader: boolean;
+  keyboardNavigation: boolean;
+}
+
+// Organization types
+export interface Organization {
+  id: UUID;
+  name: string;
+  slug: string;
+  brandingConfig: BrandingConfig;
+  themeConfig: ThemeConfig;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface BrandingConfig {
+  logo?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  customCss?: string;
+}
+
+export interface ThemeConfig {
+  name: string;
+  variables: Record<string, string>;
+}
+
+// Group types
+export interface Group {
+  id: UUID;
+  organizationId: UUID;
+  name: string;
+  description?: string;
+  createdAt: Timestamp;
+}
+
+// Course types
+export interface Course {
+  id: UUID;
+  organizationId: UUID;
+  title: string;
+  description?: string;
+  content: CourseContent;
+  status: CourseStatus;
+  createdBy: UUID;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface CourseContent {
+  lessons: Lesson[];
+  quizzes: Quiz[];
+  metadata: CourseMetadata;
+}
+
+export interface CourseMetadata {
+  estimatedDuration?: number; // in minutes
+  prerequisites?: string[];
+  learningObjectives?: string[];
+  tags?: string[];
+}
+
+// Lesson types
+export interface Lesson {
+  id: UUID;
+  courseId: UUID;
+  title: string;
+  content: LessonContent;
+  orderIndex: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface LessonContent {
+  type: "text" | "video" | "interactive" | "document";
+  data: Record<string, unknown>;
+  resources?: Resource[];
+}
+
+export interface Resource {
+  id: string;
+  type: "file" | "link" | "video" | "image";
+  url: string;
+  title: string;
+  description?: string;
+}
+
+// Quiz types
+export interface Quiz {
+  id: UUID;
+  courseId: UUID;
+  title: string;
+  questions: QuizQuestion[];
+  passingScore: number;
+  timeLimit?: number; // in minutes
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface QuizQuestion {
+  id: string;
+  type: "multiple_choice" | "true_false" | "short_answer" | "essay";
+  question: string;
+  options?: string[]; // for multiple choice
+  correctAnswer?: string | string[];
+  points: number;
+  explanation?: string;
+}
+
+// Enrollment types
+export interface CourseEnrollment {
+  id: UUID;
+  userId: UUID;
+  courseId: UUID;
+  enrolledAt: Timestamp;
+  completedAt?: Timestamp;
+  progressPercentage: number;
+}
+
+// Badge types
+export interface Badge {
+  id: UUID;
+  organizationId: UUID;
+  name: string;
+  description: string;
+  iconUrl: string;
+  pointsRequired: number;
+  level: number;
+  createdAt: Timestamp;
+}
+
+export interface UserBadge {
+  id: UUID;
+  userId: UUID;
+  badgeId: UUID;
+  earnedAt: Timestamp;
+}
+
+// Audit log types
+export interface AuditLog {
+  id: UUID;
+  timestamp: Timestamp;
+  userId: UUID;
+  organizationId: UUID;
+  action: string;
+  resourceType: string;
+  resourceId?: UUID;
+  details: Record<string, unknown>;
+  ipAddress: string;
+  userAgent: string;
+  outcome: AuditOutcome;
+}
+
+// API request/response types
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  organizationId: UUID;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
+  organizationId: UUID;
+}
+
+export interface CreateOrganizationRequest {
+  name: string;
+  slug: string;
+  brandingConfig?: BrandingConfig;
+  themeConfig?: ThemeConfig;
+}
+
+export interface UpdateOrganizationRequest {
+  name?: string;
+  brandingConfig?: BrandingConfig;
+  themeConfig?: ThemeConfig;
+}
+
+export interface InviteUserRequest {
+  email: string;
   role: UserRole;
 }
 
-// Server Action Types (for Next.js server actions)
-export interface ServerActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
+export interface InvitationResponse {
+  id: UUID;
+  email: string;
+  role: UserRole;
+  status: "pending" | "accepted" | "expired";
 }
 
-// Form Validation Types
+export interface UpdateProfileRequest {
+  profileData: Partial<UserProfileData>;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface CreateCourseRequest {
+  title: string;
+  description?: string;
+  content?: CourseContent;
+}
+
+export interface UpdateCourseRequest {
+  title?: string;
+  description?: string;
+  content?: CourseContent;
+  status?: CourseStatus;
+}
+
+// AI coaching types
+export interface CoachingAnalysisRequest {
+  userId: UUID;
+  courseId: UUID;
+}
+
+export interface CoachingAnalysisResponse {
+  progress: number;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+}
+
+export interface CoachingSuggestionRequest {
+  userId: UUID;
+  courseId: UUID;
+  question: string;
+  learningStyle?: LearningStyle;
+}
+
+export interface CoachingSuggestionResponse {
+  suggestions: string[];
+  resources: string[];
+}
+
+// AI content types
+export interface ContentGenerationRequest {
+  type: ContentType;
+  topic: string;
+  difficulty: DifficultyLevel;
+  context?: string;
+}
+
+export interface ContentGenerationResponse {
+  id: UUID;
+  content: Record<string, unknown>;
+  status: "pending" | "approved" | "rejected";
+}
+
+export interface RejectContentRequest {
+  reason: string;
+}
+
+// Motivation types
+export interface LeaderboardResponse {
+  users: LeaderboardUser[];
+}
+
+export interface LeaderboardUser {
+  userId: UUID;
+  name: string;
+  points: number;
+  level: number;
+}
+
+export interface AwardPointsRequest {
+  userId: UUID;
+  points: number;
+  reason: string;
+}
+
+// Error types
+export interface ApiError {
+  error: string;
+  message: string;
+  code: string;
+  details?: Record<string, unknown>;
+}
+
+// Cache key types
+export interface CacheKey {
+  organizationId: UUID;
+  resourceType: string;
+  resourceId: UUID;
+}
+
+export function createCacheKey(
+  organizationId: UUID,
+  resourceType: string,
+  resourceId: UUID
+): string {
+  return `${organizationId}:${resourceType}:${resourceId}`;
+}
+
+// JWT payload types
+export interface JWTPayload {
+  sub: UUID; // user id
+  email: string;
+  role: UserRole;
+  organizationId: UUID;
+  iat: number;
+  exp: number;
+}
+
+// Form validation types
 export interface ValidationError {
   field: string;
   message: string;
+  code: string;
 }
 
 export interface FormState<T> {
   data: T;
   errors: ValidationError[];
-  isSubmitting: boolean;
   isValid: boolean;
+  isSubmitting: boolean;
 }
 
-// UI Component Props Types
-export interface CourseCardProps {
-  course: Course;
-  onEnroll?: (courseId: string) => void;
-  onView?: (courseId: string) => void;
+// UI component prop types
+export interface OrganizationData {
+  name: string;
+  slug: string;
+  brandingConfig?: BrandingConfig;
+  themeConfig?: ThemeConfig;
 }
 
-export interface UserProfileProps {
-  user: User;
-  onUpdate?: (data: UpdateProfileRequest) => void;
+export interface InvitationData {
+  email: string;
+  role: UserRole;
 }
 
-export interface OrganizationSwitcherProps {
-  organizations: Organization[];
-  currentOrganization: Organization;
-  onSwitch: (organizationId: string) => void;
+export interface ProfileData {
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  preferences?: UserPreferences;
 }
 
-// Hook Types
-export interface UseAuthReturn {
-  user: User | null;
-  isLoading: boolean;
-  login: (credentials: LoginRequest) => Promise<AuthResponse>;
-  register: (data: RegisterRequest) => Promise<AuthResponse>;
-  logout: () => Promise<void>;
-  updateProfile: (data: UpdateProfileRequest) => Promise<User>;
+export interface CourseData {
+  title: string;
+  description?: string;
+  content: CourseContent;
+  status: CourseStatus;
 }
 
-export interface UseCoursesReturn {
-  courses: Course[];
-  isLoading: boolean;
-  createCourse: (data: CreateCourseRequest) => Promise<Course>;
-  updateCourse: (id: string, data: UpdateCourseRequest) => Promise<Course>;
-  enrollInCourse: (courseId: string) => Promise<Enrollment>;
+export interface CoachingRequest {
+  userId: UUID;
+  courseId: UUID;
+  question: string;
+  learningStyle?: LearningStyle;
 }
 
-export interface UseGamificationReturn {
-  points: number;
-  level: number;
-  badges: Badge[];
-  leaderboard: Leaderboard;
-  isLoading: boolean;
-  refreshData: () => Promise<void>;
+export interface CoachingResponse {
+  suggestions: string[];
+  resources: string[];
+  analysis?: CoachingAnalysisResponse;
 }
 
-// Event Types (for real-time features)
-export interface CourseProgressEvent {
-  type: 'course_progress';
-  user_id: string;
-  course_id: string;
-  lesson_id: string;
-  progress: number;
-  timestamp: string;
+export interface ContentData {
+  id: UUID;
+  type: ContentType;
+  content: Record<string, unknown>;
+  status: "pending" | "approved" | "rejected";
 }
 
-export interface QuizCompletedEvent {
-  type: 'quiz_completed';
-  user_id: string;
-  quiz_id: string;
-  score: number;
-  timestamp: string;
+// Utility types
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+
+// Resend email types
+export interface ResendEmailRequest {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+  replyTo?: string;
 }
 
-export interface BadgeEarnedEvent {
-  type: 'badge_earned';
-  user_id: string;
-  badge: Badge;
-  timestamp: string;
+export interface ResendEmailResponse {
+  id: string;
+  from: string;
+  to: string[];
+  created_at: string;
 }
 
-export type RealtimeEvent = CourseProgressEvent | QuizCompletedEvent | BadgeEarnedEvent;
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  html: string;
+  variables: string[];
+}
+
+// Supabase project configuration
+export const SUPABASE_CONFIG = {
+  projectRef: "sdxiwingetjnbxrkfpbg",
+  url: "https://sdxiwingetjnbxrkfpbg.supabase.co",
+} as const;
+
+// API endpoint types
+export type ApiEndpoint =
+  | "POST /auth/register"
+  | "POST /auth/login"
+  | "POST /auth/logout"
+  | "GET /auth/me"
+  | "GET /organizations"
+  | "POST /organizations"
+  | "GET /organizations/{id}"
+  | "PUT /organizations/{id}"
+  | "POST /organizations/{id}/invite"
+  | "GET /organizations/{id}/users"
+  | "PUT /users/{id}/profile"
+  | "PUT /users/{id}/password"
+  | "GET /courses"
+  | "POST /courses"
+  | "GET /courses/{id}"
+  | "PUT /courses/{id}"
+  | "DELETE /courses/{id}"
+  | "POST /ai/coach/analyze"
+  | "POST /ai/coach/suggest"
+  | "POST /ai/content/generate"
+  | "POST /ai/content/{id}/approve"
+  | "POST /ai/content/{id}/reject"
+  | "GET /motivation/leaderboard"
+  | "GET /motivation/badges"
+  | "POST /motivation/points";

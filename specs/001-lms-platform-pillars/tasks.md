@@ -1,254 +1,380 @@
 # LogosLMS Platform Implementation Tasks
 
+**Generated:** 2025-10-18  
 **Feature:** LogosLMS Platform with Three Pillars  
 **Version:** 1.0  
-**Generated:** 2024-12-19
+**Total Tasks:** 127  
+**Estimated Duration:** 12 weeks (Nov 1, 2025 - Jan 24, 2026)
+
+## Overview
+
+This document provides a comprehensive, dependency-ordered task list for implementing the LogosLMS platform. Tasks are organized by user stories to enable independent implementation and testing. Each task follows the strict checklist format with clear file paths and parallel execution opportunities.
+
+## User Stories Priority Order
+
+1. **P1 - Super-Admin Setup** (US1): Create initial organization and assign first admin
+2. **P1 - Organization Admin Management** (US2): Configure branding, invite users, manage groups
+3. **P1 - Mentor Content Creation** (US3): Author courses, lessons, quizzes with AI assistance
+4. **P1 - Learner Experience** (US4): Enroll in courses, study, receive AI coaching, earn points
+5. **P2 - Profile Management** (US5): Self-service profile and password management for all users
 
 ## Implementation Strategy
 
-**MVP Scope:** Focus on Super-Admin and Organization Admin user stories first to establish the multi-tenant foundation, then build core LMS features, followed by AI and motivation systems.
+- **MVP Scope:** Focus on User Stories 1-4 (P1) for initial release
+- **Incremental Delivery:** Each user story phase is independently testable
+- **Parallel Execution:** Tasks marked with [P] can be executed in parallel
+- **Dependency Management:** Clear prerequisites ensure proper execution order
 
-**Delivery Approach:** Incremental delivery with each user story being independently testable and deployable.
+---
+
+## Phase 1: Project Setup (Weeks 1-2)
+
+### Foundation Tasks
+
+- [ ] T001 Create Next.js 15 project with TypeScript and Tailwind CSS v4 in /Users/lperng/LMS/LMS
+- [ ] T002 Configure Supabase project (sdxiwingetjnbxrkfpbg) with RLS policies in /Users/lperng/LMS/LMS
+- [ ] T003 Set up environment configuration with .env.local template in /Users/lperng/LMS/LMS
+- [ ] T004 Install and configure Shadcn UI components in /Users/lperng/LMS/LMS
+- [ ] T005 [P] Configure Resend API integration for email services in /Users/lperng/LMS/LMS
+- [ ] T006 [P] Set up ESLint and Prettier configuration in /Users/lperng/LMS/LMS
+- [ ] T007 [P] Configure TypeScript strict mode and path aliases in /Users/lperng/LMS/LMS
+- [ ] T008 [P] Set up Jest and React Testing Library in /Users/lperng/LMS/LMS
+
+### Database Schema Implementation
+
+- [ ] T009 Create organizations table with RLS policies in Supabase
+- [ ] T010 Create users table with role-based access in Supabase
+- [ ] T011 Create groups table for organization management in Supabase
+- [ ] T012 Create courses table with multi-tenant support in Supabase
+- [ ] T013 Create lessons table with course relationships in Supabase
+- [ ] T014 Create quizzes table with assessment structure in Supabase
+- [ ] T015 Create course_enrollments table for progress tracking in Supabase
+- [ ] T016 Create badges table for gamification system in Supabase
+- [ ] T017 Create user_badges table for achievement tracking in Supabase
+- [ ] T018 Create audit_logs table for compliance tracking in Supabase
+- [ ] T019 [P] Create database indexes for performance optimization in Supabase
+- [ ] T020 [P] Set up RLS policies for all tables in Supabase
+- [ ] T021 [P] Create database migration scripts in /Users/lperng/LMS/LMS/migrations
+
+### Core Infrastructure
+
+- [ ] T022 Implement multi-tenant middleware in /Users/lperng/LMS/LMS/src/middleware/auth-middleware.ts
+- [ ] T023 Create organization context provider in /Users/lperng/LMS/LMS/src/contexts/organization-context.tsx
+- [ ] T024 Implement cache key utility with organization isolation in /Users/lperng/LMS/LMS/src/lib/cache-utils.ts
+- [ ] T025 Create audit logging service in /Users/lperng/LMS/LMS/src/lib/audit-logger.ts
+- [ ] T026 [P] Set up error handling and logging infrastructure in /Users/lperng/LMS/LMS/src/lib/error-handler.ts
+- [ ] T027 [P] Create API response utilities in /Users/lperng/LMS/LMS/src/lib/api-utils.ts
+- [ ] T028 [P] Implement rate limiting middleware in /Users/lperng/LMS/LMS/src/middleware/rate-limiter.ts
+
+---
+
+## Phase 2: Foundational Services (Week 3)
+
+### Authentication & Authorization
+
+- [ ] T029 Implement Supabase Auth integration in /Users/lperng/LMS/LMS/src/lib/auth.ts
+- [ ] T030 Create JWT token utilities with organization context in /Users/lperng/LMS/LMS/src/lib/jwt-utils.ts
+- [ ] T031 Implement role-based access control utilities in /Users/lperng/LMS/LMS/src/lib/rbac.ts
+- [ ] T032 [P] Create authentication API routes in /Users/lperng/LMS/LMS/src/app/api/auth/
+- [ ] T033 [P] Implement session management in /Users/lperng/LMS/LMS/src/lib/session-manager.ts
+
+### Database Services
+
+- [ ] T034 Create Supabase client with organization context in /Users/lperng/LMS/LMS/src/lib/supabase.ts
+- [ ] T035 Implement database query utilities with RLS in /Users/lperng/LMS/LMS/src/lib/db-utils.ts
+- [ ] T036 [P] Create database migration runner in /Users/lperng/LMS/LMS/src/lib/migration-runner.ts
+- [ ] T037 [P] Implement database seeding scripts in /Users/lperng/LMS/LMS/src/lib/seed-data.ts
+
+### Email Services
+
+- [ ] T038 Implement Resend email service in /Users/lperng/LMS/LMS/src/lib/email-service.ts
+- [ ] T039 Create email templates for user invitations in /Users/lperng/LMS/LMS/src/lib/email-templates.ts
+- [ ] T040 [P] Implement email queue system in /Users/lperng/LMS/LMS/src/lib/email-queue.ts
+
+---
+
+## Phase 3: User Story 1 - Super-Admin Setup (Week 4)
+
+**Goal:** Enable super-admin to create initial organization and assign first admin  
+**Test Criteria:** Super-admin can create organization, assign admin, and verify data isolation
+
+### US1: Organization Creation
+
+- [ ] T041 [US1] Create OrganizationSetupWizard component in /Users/lperng/LMS/LMS/src/components/organization-setup-wizard.tsx
+- [ ] T042 [US1] Implement organization creation API in /Users/lperng/LMS/LMS/src/app/api/organizations/route.ts
+- [ ] T043 [US1] Create organization data validation schemas in /Users/lperng/LMS/LMS/src/lib/validators/organization.ts
+- [ ] T044 [US1] [P] Implement organization service layer in /Users/lperng/LMS/LMS/src/services/organization-service.ts
+- [ ] T045 [US1] [P] Create organization management page in /Users/lperng/LMS/LMS/src/app/(main)/admin/organizations/page.tsx
+
+### US1: Admin Assignment
+
+- [ ] T046 [US1] Create admin user creation form in /Users/lperng/LMS/LMS/src/components/admin-creation-form.tsx
+- [ ] T047 [US1] Implement admin assignment API in /Users/lperng/LMS/LMS/src/app/api/admin/assign/route.ts
+- [ ] T048 [US1] [P] Create user service with role management in /Users/lperng/LMS/LMS/src/services/user-service.ts
+- [ ] T049 [US1] [P] Implement super-admin dashboard in /Users/lperng/LMS/LMS/src/app/(main)/admin/dashboard/page.tsx
+
+### US1: Platform Health Monitoring
+
+- [ ] T050 [US1] Create platform health metrics API in /Users/lperng/LMS/LMS/src/app/api/health/route.ts
+- [ ] T051 [US1] [P] Implement health monitoring dashboard in /Users/lperng/LMS/LMS/src/components/health-dashboard.tsx
+- [ ] T052 [US1] [P] Create system metrics collection in /Users/lperng/LMS/LMS/src/lib/metrics-collector.ts
+
+---
+
+## Phase 4: User Story 2 - Organization Admin Management (Week 5-6)
+
+**Goal:** Enable organization admins to configure branding, invite users, and manage groups  
+**Test Criteria:** Admin can customize organization, invite users, and manage groups independently
+
+### US2: Branding & Theme Configuration
+
+- [ ] T053 [US2] Create branding configuration form in /Users/lperng/LMS/LMS/src/components/branding-config-form.tsx
+- [ ] T054 [US2] Implement theme customization interface in /Users/lperng/LMS/LMS/src/components/theme-customizer.tsx
+- [ ] T055 [US2] Create organization settings API in /Users/lperng/LMS/LMS/src/app/api/organizations/[id]/settings/route.ts
+- [ ] T056 [US2] [P] Implement dynamic theming system in /Users/lperng/LMS/LMS/src/lib/theme-manager.ts
+- [ ] T057 [US2] [P] Create organization settings page in /Users/lperng/LMS/LMS/src/app/(main)/admin/settings/page.tsx
+
+### US2: User Invitation System
+
+- [ ] T058 [US2] Create UserInvitationForm component in /Users/lperng/LMS/LMS/src/components/user-invitation-form.tsx
+- [ ] T059 [US2] Implement user invitation API in /Users/lperng/LMS/LMS/src/app/api/organizations/[id]/invite/route.ts
+- [ ] T060 [US2] Create invitation email templates in /Users/lperng/LMS/LMS/src/lib/email-templates/invitation.ts
+- [ ] T061 [US2] [P] Implement invitation management service in /Users/lperng/LMS/LMS/src/services/invitation-service.ts
+- [ ] T062 [US2] [P] Create user management dashboard in /Users/lperng/LMS/LMS/src/app/(main)/admin/users/page.tsx
+
+### US2: Group Management
+
+- [ ] T063 [US2] Create group management interface in /Users/lperng/LMS/LMS/src/components/group-management.tsx
+- [ ] T064 [US2] Implement group CRUD API in /Users/lperng/LMS/LMS/src/app/api/groups/route.ts
+- [ ] T065 [US2] [P] Create group service layer in /Users/lperng/LMS/LMS/src/services/group-service.ts
+- [ ] T066 [US2] [P] Implement group membership management in /Users/lperng/LMS/LMS/src/components/group-membership.tsx
+
+---
+
+## Phase 5: User Story 3 - Mentor Content Creation (Week 7-8)
+
+**Goal:** Enable mentors to author courses, lessons, and quizzes with AI assistance  
+**Test Criteria:** Mentors can create educational content, use AI assistance, and manage course lifecycle
+
+### US3: Course Creation System
+
+- [ ] T067 [US3] Create CourseBuilder component in /Users/lperng/LMS/LMS/src/components/course-builder.tsx
+- [ ] T068 [US3] Implement course CRUD API in /Users/lperng/LMS/LMS/src/app/api/courses/route.ts
+- [ ] T069 [US3] Create course content validation schemas in /Users/lperng/LMS/LMS/src/lib/validators/course.ts
+- [ ] T070 [US3] [P] Implement course service layer in /Users/lperng/LMS/LMS/src/services/course-service.ts
+- [ ] T071 [US3] [P] Create course management dashboard in /Users/lperng/LMS/LMS/src/app/(main)/mentor/courses/page.tsx
+
+### US3: Lesson & Quiz Management
+
+- [ ] T072 [US3] Create lesson editor component in /Users/lperng/LMS/LMS/src/components/lesson-editor.tsx
+- [ ] T073 [US3] Create quiz builder component in /Users/lperng/LMS/LMS/src/components/quiz-builder.tsx
+- [ ] T074 [US3] Implement lesson API in /Users/lperng/LMS/LMS/src/app/api/lessons/route.ts
+- [ ] T075 [US3] Implement quiz API in /Users/lperng/LMS/LMS/src/app/api/quizzes/route.ts
+- [ ] T076 [US3] [P] Create content service layer in /Users/lperng/LMS/LMS/src/services/content-service.ts
+- [ ] T077 [US3] [P] Implement content validation utilities in /Users/lperng/LMS/LMS/src/lib/validators/content.ts
+
+### US3: AI Content Generation
+
+- [ ] T078 [US3] Create abstract AI service interface in /Users/lperng/LMS/LMS/src/lib/ai/ai-service.ts
+- [ ] T079 [US3] Implement OpenAI provider in /Users/lperng/LMS/LMS/src/lib/ai/providers/openai.ts
+- [ ] T080 [US3] Implement Anthropic provider in /Users/lperng/LMS/LMS/src/lib/ai/providers/anthropic.ts
+- [ ] T081 [US3] Create AI content generation API in /Users/lperng/LMS/LMS/src/app/api/ai/content/generate/route.ts
+- [ ] T082 [US3] [P] Implement AI content approval workflow in /Users/lperng/LMS/LMS/src/components/ai-content-approval.tsx
+- [ ] T083 [US3] [P] Create AI service factory in /Users/lperng/LMS/LMS/src/lib/ai/ai-factory.ts
+
+---
+
+## Phase 6: User Story 4 - Learner Experience (Week 9-10)
+
+**Goal:** Enable learners to enroll in courses, study, receive AI coaching, and earn points  
+**Test Criteria:** Learners can complete full learning journey with AI support and gamification
+
+### US4: Course Enrollment & Learning
+
+- [ ] T084 [US4] Create course catalog component in /Users/lperng/LMS/LMS/src/components/course-catalog.tsx
+- [ ] T085 [US4] Implement enrollment API in /Users/lperng/LMS/LMS/src/app/api/enrollments/route.ts
+- [ ] T086 [US4] Create lesson viewer component in /Users/lperng/LMS/LMS/src/components/lesson-viewer.tsx
+- [ ] T087 [US4] Create quiz interface component in /Users/lperng/LMS/LMS/src/components/quiz-interface.tsx
+- [ ] T088 [US4] [P] Implement enrollment service in /Users/lperng/LMS/LMS/src/services/enrollment-service.ts
+- [ ] T089 [US4] [P] Create progress tracking service in /Users/lperng/LMS/LMS/src/services/progress-service.ts
+
+### US4: AI Coaching System
+
+- [ ] T090 [US4] Create AICoachingPanel component in /Users/lperng/LMS/LMS/src/components/ai-coaching-panel.tsx
+- [ ] T091 [US4] Implement coaching analysis API in /Users/lperng/LMS/LMS/src/app/api/ai/coach/analyze/route.ts
+- [ ] T092 [US4] Implement coaching suggestions API in /Users/lperng/LMS/LMS/src/app/api/ai/coach/suggest/route.ts
+- [ ] T093 [US4] [P] Create coaching service layer in /Users/lperng/LMS/LMS/src/services/coaching-service.ts
+- [ ] T094 [US4] [P] Implement learning style detection in /Users/lperng/LMS/LMS/src/lib/learning-style-detector.ts
+
+### US4: Gamification System
+
+- [ ] T095 [US4] Create MotivationDashboard component in /Users/lperng/LMS/LMS/src/components/motivation-dashboard.tsx
+- [ ] T096 [US4] Implement points system API in /Users/lperng/LMS/LMS/src/app/api/motivation/points/route.ts
+- [ ] T097 [US4] Implement leaderboard API in /Users/lperng/LMS/LMS/src/app/api/motivation/leaderboard/route.ts
+- [ ] T098 [US4] Create badge system API in /Users/lperng/LMS/LMS/src/app/api/motivation/badges/route.ts
+- [ ] T099 [US4] [P] Implement motivation service in /Users/lperng/LMS/LMS/src/services/motivation-service.ts
+- [ ] T100 [US4] [P] Create achievement tracking system in /Users/lperng/LMS/LMS/src/lib/achievement-tracker.ts
+
+---
+
+## Phase 7: User Story 5 - Profile Management (Week 11)
+
+**Goal:** Enable all users to manage their profiles and passwords independently  
+**Test Criteria:** All user types can update profiles and change passwords securely
+
+### US5: Profile Management
+
+- [ ] T101 [US5] Create ProfileManagement component in /Users/lperng/LMS/LMS/src/components/profile-management.tsx
+- [ ] T102 [US5] Implement profile update API in /Users/lperng/LMS/LMS/src/app/api/users/[id]/profile/route.ts
+- [ ] T103 [US5] Implement password change API in /Users/lperng/LMS/LMS/src/app/api/users/[id]/password/route.ts
+- [ ] T104 [US5] [P] Create profile service layer in /Users/lperng/LMS/LMS/src/services/profile-service.ts
+- [ ] T105 [US5] [P] Implement password validation utilities in /Users/lperng/LMS/LMS/src/lib/password-utils.ts
+
+---
+
+## Phase 8: Polish & Cross-Cutting Concerns (Week 12)
+
+### Security & Compliance
+
+- [ ] T106 Implement comprehensive RLS testing in /Users/lperng/LMS/LMS/tests/security/rls.test.ts
+- [ ] T107 Create security audit script in /Users/lperng/LMS/LMS/scripts/security-audit.ts
+- [ ] T108 [P] Implement GDPR compliance utilities in /Users/lperng/LMS/LMS/src/lib/gdpr-utils.ts
+- [ ] T109 [P] Create data export functionality in /Users/lperng/LMS/LMS/src/lib/data-export.ts
+
+### Performance & Accessibility
+
+- [ ] T110 Implement Lighthouse testing automation in /Users/lperng/LMS/LMS/scripts/lighthouse-test.ts
+- [ ] T111 Create accessibility testing suite in /Users/lperng/LMS/LMS/tests/accessibility/a11y.test.ts
+- [ ] T112 [P] Implement performance monitoring in /Users/lperng/LMS/LMS/src/lib/performance-monitor.ts
+- [ ] T113 [P] Create bundle size optimization in /Users/lperng/LMS/LMS/next.config.mjs
+
+### Testing & Quality Assurance
+
+- [ ] T114 Create comprehensive test suite in /Users/lperng/LMS/LMS/tests/
+- [ ] T115 Implement integration tests for all user stories in /Users/lperng/LMS/LMS/tests/integration/
+- [ ] T116 [P] Create E2E testing with Playwright in /Users/lperng/LMS/LMS/tests/e2e/
+- [ ] T117 [P] Implement CI/CD pipeline configuration in /Users/lperng/LMS/LMS/.github/workflows/
+
+### Documentation & Deployment
+
+- [ ] T118 Create API documentation with OpenAPI in /Users/lperng/LMS/LMS/docs/api/
+- [ ] T119 Implement deployment scripts in /Users/lperng/LMS/LMS/scripts/deploy/
+- [ ] T120 [P] Create user documentation in /Users/lperng/LMS/LMS/docs/user/
+- [ ] T121 [P] Implement monitoring and alerting in /Users/lperng/LMS/LMS/src/lib/monitoring.ts
+
+### Final Integration
+
+- [ ] T122 Create end-to-end integration tests in /Users/lperng/LMS/LMS/tests/integration/full-flow.test.ts
+- [ ] T123 Implement data migration scripts in /Users/lperng/LMS/LMS/migrations/
+- [ ] T124 [P] Create production deployment checklist in /Users/lperng/LMS/LMS/docs/deployment.md
+- [ ] T125 [P] Implement backup and recovery procedures in /Users/lperng/LMS/LMS/scripts/backup/
+
+### Final Validation
+
+- [ ] T126 Perform comprehensive security audit
+- [ ] T127 Execute final user acceptance testing
+
+---
 
 ## Dependencies
 
-**Story Completion Order:**
-1. **US1 (Super-Admin)** → **US2 (Organization Admin)** → **US3 (Mentor)** → **US4 (Learner)**
-2. **US1** must complete before **US2** (organization creation prerequisite)
-3. **US2** must complete before **US3** and **US4** (user invitation prerequisite)
-4. **US3** and **US4** can be developed in parallel after **US2** completion
+### User Story Completion Order
+1. **Phase 1-2** (Setup & Foundation) → **Phase 3** (US1: Super-Admin)
+2. **Phase 3** (US1) → **Phase 4** (US2: Organization Admin)
+3. **Phase 4** (US2) → **Phase 5** (US3: Mentor Content)
+4. **Phase 5** (US3) → **Phase 6** (US4: Learner Experience)
+5. **Phase 6** (US4) → **Phase 7** (US5: Profile Management)
+6. **Phase 7** (US5) → **Phase 8** (Polish & Cross-Cutting)
 
-## Phase 1: Project Setup
-
-### T001-T010: Foundation Setup
-
-- [ ] T001 Create Next.js 15 project with TypeScript and App Router in /Users/lperng/LMS/LMS
-- [ ] T002 Configure Tailwind CSS v4 and Shadcn UI components in /Users/lperng/LMS/LMS
-- [ ] T003 Set up ESLint, Prettier, and Husky for code quality in /Users/lperng/LMS/LMS
-- [ ] T004 Initialize Supabase project and configure environment variables in /Users/lperng/LMS/LMS/.env.local
-- [ ] T005 Create database schema with RLS policies in /Users/lperng/LMS/LMS/supabase/migrations
-- [ ] T006 Set up authentication middleware with organization context in /Users/lperng/LMS/LMS/src/middleware
-- [ ] T007 Create base UI components with Shadcn UI in /Users/lperng/LMS/LMS/src/components/ui
-- [ ] T008 Set up multi-tenant routing structure in /Users/lperng/LMS/LMS/src/app
-- [ ] T009 Configure caching strategy with organization-specific keys in /Users/lperng/LMS/LMS/src/lib
-- [ ] T010 Create audit logging service in /Users/lperng/LMS/LMS/src/lib
-
-## Phase 2: Foundational Prerequisites
-
-### T011-T020: Core Infrastructure
-
-- [ ] T011 Implement database models with organization_id in /Users/lperng/LMS/LMS/src/lib/database
-- [ ] T012 Create RLS policy enforcement utilities in /Users/lperng/LMS/LMS/src/lib/rls
-- [ ] T013 Set up JWT token handling with organization context in /Users/lperng/LMS/LMS/src/lib/auth
-- [ ] T014 Create organization context provider in /Users/lperng/LMS/LMS/src/contexts
-- [ ] T015 Implement cache key generation utilities in /Users/lperng/LMS/LMS/src/lib/cache
-- [ ] T016 Set up error handling and logging in /Users/lperng/LMS/LMS/src/lib/errors
-- [ ] T017 Create API route structure with organization middleware in /Users/lperng/LMS/LMS/src/app/api
-- [ ] T018 Implement data validation schemas with Zod in /Users/lperng/LMS/LMS/src/lib/validations
-- [ ] T019 Set up accessibility utilities and ARIA helpers in /Users/lperng/LMS/LMS/src/lib/accessibility
-- [ ] T020 Create performance monitoring utilities in /Users/lperng/LMS/LMS/src/lib/performance
-
-## Phase 3: Super-Admin User Stories (US1)
-
-### Story Goal
-Enable super-admin to create organizations, assign organization admins, and monitor platform health.
-
-### Independent Test Criteria
-- Super-admin can create new organizations with unique slugs
-- Super-admin can assign organization admin roles
-- Super-admin can view platform-wide metrics
-- Only super-admin can create organizations
-- All actions are properly audited
-
-### T021-T035: Super-Admin Implementation
-
-- [ ] T021 [US1] Create Organization model with validation in /Users/lperng/LMS/LMS/src/lib/database/models/organization.ts
-- [ ] T022 [US1] Implement organization creation service in /Users/lperng/LMS/LMS/src/lib/services/organization-service.ts
-- [ ] T023 [US1] Create organization setup wizard component in /Users/lperng/LMS/LMS/src/components/organization-setup-wizard.tsx
-- [ ] T024 [US1] Implement organization creation API endpoint in /Users/lperng/LMS/LMS/src/app/api/organizations/route.ts
-- [ ] T025 [US1] Create organization management dashboard in /Users/lperng/LMS/LMS/src/app/(main)/admin/organizations/page.tsx
-- [ ] T026 [US1] Implement user role assignment service in /Users/lperng/LMS/LMS/src/lib/services/user-service.ts
-- [ ] T027 [US1] Create user invitation API endpoint in /Users/lperng/LMS/LMS/src/app/api/organizations/[id]/invite/route.ts
-- [ ] T028 [US1] Implement platform health metrics service in /Users/lperng/LMS/LMS/src/lib/services/metrics-service.ts
-- [ ] T029 [US1] Create platform health dashboard in /Users/lperng/LMS/LMS/src/app/(main)/admin/health/page.tsx
-- [ ] T030 [US1] Implement super-admin authorization middleware in /Users/lperng/LMS/LMS/src/middleware/super-admin.ts
-- [ ] T031 [US1] Create organization list component with actions in /Users/lperng/LMS/LMS/src/components/admin/organization-list.tsx
-- [ ] T032 [US1] Implement organization update API endpoint in /Users/lperng/LMS/LMS/src/app/api/organizations/[id]/route.ts
-- [ ] T033 [US1] Create user management interface for super-admin in /Users/lperng/LMS/LMS/src/components/admin/user-management.tsx
-- [ ] T034 [US1] Implement audit logging service with immutable log storage in /Users/lperng/LMS/LMS/src/lib/audit
-- [ ] T034a [US1] Create audit log database schema and RLS policies in /Users/lperng/LMS/LMS/supabase/migrations
-- [ ] T034b [US1] Implement audit logging middleware for API routes in /Users/lperng/LMS/LMS/src/middleware/audit.ts
-- [ ] T034c [US1] Create audit log viewer interface for super-admins in /Users/lperng/LMS/LMS/src/components/admin/audit-log-viewer.tsx
-- [ ] T035 [US1] Create super-admin navigation and layout in /Users/lperng/LMS/LMS/src/app/(main)/admin/layout.tsx
-
-## Phase 4: Organization Admin User Stories (US2)
-
-### Story Goal
-Enable organization admins to configure branding, invite users, manage groups, and handle their own profile.
-
-### Independent Test Criteria
-- Organization admin can configure organization branding and theme
-- Organization admin can invite users with specific roles
-- Organization admin can create and manage groups
-- Organization admin can update their own profile and password
-- All actions respect organization boundaries
-
-### T036-T055: Organization Admin Implementation
-
-- [ ] T036 [US2] Create Group model with organization validation in /Users/lperng/LMS/LMS/src/lib/database/models/group.ts
-- [ ] T037 [US2] Implement group management service in /Users/lperng/LMS/LMS/src/lib/services/group-service.ts
-- [ ] T038 [US2] Create organization branding configuration component in /Users/lperng/LMS/LMS/src/components/organization/branding-config.tsx
-- [ ] T039 [US2] Implement organization update service in /Users/lperng/LMS/LMS/src/lib/services/organization-service.ts
-- [ ] T040 [US2] Create user invitation form component in /Users/lperng/LMS/LMS/src/components/user-invitation-form.tsx
-- [ ] T041 [US2] Implement user invitation service with email sending in /Users/lperng/LMS/LMS/src/lib/services/invitation-service.ts
-- [ ] T042 [US2] Create group management interface in /Users/lperng/LMS/LMS/src/components/admin/group-management.tsx
-- [ ] T043 [US2] Implement group CRUD API endpoints in /Users/lperng/LMS/LMS/src/app/api/groups/route.ts
-- [ ] T044 [US2] Create profile management component in /Users/lperng/LMS/LMS/src/components/profile/profile-management.tsx
-- [ ] T045 [US2] Implement profile update service in /Users/lperng/LMS/LMS/src/lib/services/profile-service.ts
-- [ ] T046 [US2] Create password change component in /Users/lperng/LMS/LMS/src/components/profile/password-change.tsx
-- [ ] T047 [US2] Implement password update API endpoint in /Users/lperng/LMS/LMS/src/app/api/users/[id]/password/route.ts
-- [ ] T048 [US2] Create organization settings page in /Users/lperng/LMS/LMS/src/app/(main)/admin/settings/page.tsx
-- [ ] T049 [US2] Implement organization context switching in /Users/lperng/LMS/LMS/src/components/multi-tenant-switcher.tsx
-- [ ] T050 [US2] Create user management dashboard for org admin in /Users/lperng/LMS/LMS/src/app/(main)/admin/users/page.tsx
-- [ ] T051 [US2] Implement role-based navigation component in /Users/lperng/LMS/LMS/src/components/navigation/role-based-nav.tsx
-- [ ] T052 [US2] Create organization theme configuration in /Users/lperng/LMS/LMS/src/components/organization/theme-config.tsx
-- [ ] T053 [US2] Implement organization-specific theming in /Users/lperng/LMS/LMS/src/lib/theme
-- [ ] T054 [US2] Create group assignment interface in /Users/lperng/LMS/LMS/src/components/admin/group-assignment.tsx
-- [ ] T055 [US2] Implement organization admin authorization middleware in /Users/lperng/LMS/LMS/src/middleware/org-admin.ts
-
-## Phase 5: Mentor User Stories (US3)
-
-### Story Goal
-Enable mentors to create courses, lessons, and quizzes, review learner submissions, use AI assistance, and manage their profile.
-
-### Independent Test Criteria
-- Mentor can create and manage courses with lessons and quizzes
-- Mentor can review and grade learner submissions
-- Mentor can use AI authoring assistance with approval workflow
-- Mentor can update their profile and password
-- All content respects organization boundaries
-
-### T056-T080: Mentor Implementation
-
-- [ ] T056 [US3] Create Course model with organization validation in /Users/lperng/LMS/LMS/src/lib/database/models/course.ts
-- [ ] T057 [US3] Create Lesson model with course relationship in /Users/lperng/LMS/LMS/src/lib/database/models/lesson.ts
-- [ ] T058 [US3] Create Quiz model with course relationship in /Users/lperng/LMS/LMS/src/lib/database/models/quiz.ts
-- [ ] T059 [US3] Implement course management service in /Users/lperng/LMS/LMS/src/lib/services/course-service.ts
-- [ ] T060 [US3] Create course builder component in /Users/lperng/LMS/LMS/src/components/course/course-builder.tsx
-- [ ] T061 [US3] Implement course CRUD API endpoints in /Users/lperng/LMS/LMS/src/app/api/courses/route.ts
-- [ ] T062 [US3] Create lesson editor component in /Users/lperng/LMS/LMS/src/components/course/lesson-editor.tsx
-- [ ] T063 [US3] Implement lesson management service in /Users/lperng/LMS/LMS/src/lib/services/lesson-service.ts
-- [ ] T064 [US3] Create quiz builder component in /Users/lperng/LMS/LMS/src/components/course/quiz-builder.tsx
-- [ ] T065 [US3] Implement quiz management service in /Users/lperng/LMS/LMS/src/lib/services/quiz-service.ts
-- [ ] T066 [US3] Create AI content generation interface in /Users/lperng/LMS/LMS/src/components/ai/ai-content-generator.tsx
-- [ ] T067 [US3] Implement abstract AI service interface in /Users/lperng/LMS/LMS/src/lib/services/ai/ai-service.ts
-- [ ] T068 [US3] Create AI content approval interface in /Users/lperng/LMS/LMS/src/components/ai/ai-content-approval.tsx
-- [ ] T069 [US3] Implement AI content approval workflow in /Users/lperng/LMS/LMS/src/lib/services/ai/ai-approval-service.ts
-- [ ] T070 [US3] Create AI content generation API endpoints in /Users/lperng/LMS/LMS/src/app/api/ai/content/route.ts
-- [ ] T071 [US3] Implement AI content approval API endpoints in /Users/lperng/LMS/LMS/src/app/api/ai/content/[id]/approve/route.ts
-- [ ] T072 [US3] Create learner submission review interface in /Users/lperng/LMS/LMS/src/components/mentor/submission-review.tsx
-- [ ] T073 [US3] Implement submission grading service in /Users/lperng/LMS/LMS/src/lib/services/grading-service.ts
-- [ ] T074 [US3] Create mentor dashboard in /Users/lperng/LMS/LMS/src/app/(main)/mentor/dashboard/page.tsx
-- [ ] T075 [US3] Implement mentor authorization middleware in /Users/lperng/LMS/LMS/src/middleware/mentor.ts
-- [ ] T076 [US3] Create course management dashboard in /Users/lperng/LMS/LMS/src/app/(main)/mentor/courses/page.tsx
-- [ ] T077 [US3] Implement course publishing workflow in /Users/lperng/LMS/LMS/src/lib/services/publishing-service.ts
-- [ ] T078 [US3] Create AI coaching panel component in /Users/lperng/LMS/LMS/src/components/ai/ai-coaching-panel.tsx
-- [ ] T079 [US3] Implement AI coaching service in /Users/lperng/LMS/LMS/src/lib/services/ai/ai-coaching-service.ts
-- [ ] T080 [US3] Create mentor profile management in /Users/lperng/LMS/LMS/src/app/(main)/mentor/profile/page.tsx
-
-## Phase 6: Learner User Stories (US4)
-
-### Story Goal
-Enable learners to enroll in courses, study lessons, take quizzes, receive AI coaching, earn points and badges, and manage their profile.
-
-### Independent Test Criteria
-- Learner can browse and enroll in available courses
-- Learner can study lessons and take quizzes
-- Learner can receive AI coaching and suggestions
-- Learner can earn points and badges through the motivation system
-- Learner can update their profile and password
-
-### T081-T105: Learner Implementation
-
-- [ ] T081 [US4] Create Enrollment model with user and course relationship in /Users/lperng/LMS/LMS/src/lib/database/models/enrollment.ts
-- [ ] T082 [US4] Create Badge model with organization validation in /Users/lperng/LMS/LMS/src/lib/database/models/badge.ts
-- [ ] T083 [US4] Create UserBadge model for earned badges in /Users/lperng/LMS/LMS/src/lib/database/models/user-badge.ts
-- [ ] T084 [US4] Implement enrollment service in /Users/lperng/LMS/LMS/src/lib/services/enrollment-service.ts
-- [ ] T085 [US4] Create course catalog component in /Users/lperng/LMS/LMS/src/components/learner/course-catalog.tsx
-- [ ] T086 [US4] Implement course enrollment API endpoints in /Users/lperng/LMS/LMS/src/app/api/enrollments/route.ts
-- [ ] T087 [US4] Create lesson viewer component in /Users/lperng/LMS/LMS/src/components/learner/lesson-viewer.tsx
-- [ ] T088 [US4] Implement lesson progress tracking in /Users/lperng/LMS/LMS/src/lib/services/progress-service.ts
-- [ ] T089 [US4] Create quiz interface component in /Users/lperng/LMS/LMS/src/components/learner/quiz-interface.tsx
-- [ ] T090 [US4] Implement quiz submission service in /Users/lperng/LMS/LMS/src/lib/services/quiz-submission-service.ts
-- [ ] T091 [US4] Create AI coaching interface in /Users/lperng/LMS/LMS/src/components/learner/ai-coaching-interface.tsx
-- [ ] T092 [US4] Implement AI coaching service for learners in /Users/lperng/LMS/LMS/src/lib/services/ai/learner-coaching-service.ts
-- [ ] T093 [US4] Create motivation dashboard component in /Users/lperng/LMS/LMS/src/components/motivation/motivation-dashboard.tsx
-- [ ] T094 [US4] Implement points and badge system in /Users/lperng/LMS/LMS/src/lib/services/motivation-service.ts
-- [ ] T095 [US4] Create leaderboard component in /Users/lperng/LMS/LMS/src/components/motivation/leaderboard.tsx
-- [ ] T096 [US4] Implement motivation system API endpoints in /Users/lperng/LMS/LMS/src/app/api/motivation/route.ts
-- [ ] T097 [US4] Create learner dashboard in /Users/lperng/LMS/LMS/src/app/(main)/learner/dashboard/page.tsx
-- [ ] T098 [US4] Implement learner authorization middleware in /Users/lperng/LMS/LMS/src/middleware/learner.ts
-- [ ] T099 [US4] Create my courses page in /Users/lperng/LMS/LMS/src/app/(main)/learner/courses/page.tsx
-- [ ] T100 [US4] Implement progress tracking visualization in /Users/lperng/LMS/LMS/src/components/learner/progress-tracking.tsx
-- [ ] T101 [US4] Create badge display component in /Users/lperng/LMS/LMS/src/components/motivation/badge-display.tsx
-- [ ] T102 [US4] Implement badge earning logic in /Users/lperng/LMS/LMS/src/lib/services/badge-service.ts
-- [ ] T103 [US4] Create learner profile management in /Users/lperng/LMS/LMS/src/app/(main)/learner/profile/page.tsx
-- [ ] T104 [US4] Implement AI coaching API endpoints in /Users/lperng/LMS/LMS/src/app/api/ai/coach/route.ts
-- [ ] T105 [US4] Create course progress tracking in /Users/lperng/LMS/LMS/src/components/learner/course-progress.tsx
-
-## Phase 7: Polish & Cross-Cutting Concerns
-
-### T106-T120: Final Implementation
-
-- [ ] T106 Implement comprehensive error handling across all components in /Users/lperng/LMS/LMS/src/lib/errors
-- [ ] T107 Add accessibility testing and WCAG AA compliance validation in /Users/lperng/LMS/LMS/src/lib/accessibility
-- [ ] T108 Implement performance monitoring and Lighthouse score optimization in /Users/lperng/LMS/LMS/src/lib/performance
-- [ ] T109 Add comprehensive logging and audit trail functionality in /Users/lperng/LMS/LMS/src/lib/audit
-- [ ] T110 Implement security testing and penetration testing utilities in /Users/lperng/LMS/LMS/src/lib/security
-- [ ] T111 Add comprehensive unit tests for all services in /Users/lperng/LMS/LMS/src/__tests__
-- [ ] T112 Implement integration tests for all API endpoints in /Users/lperng/LMS/LMS/src/__tests__/integration
-- [ ] T113 Add accessibility tests for all UI components in /Users/lperng/LMS/LMS/src/__tests__/accessibility
-- [ ] T114 Implement end-to-end tests for critical user flows in /Users/lperng/LMS/LMS/src/__tests__/e2e
-- [ ] T115 Add multi-tenant isolation testing in /Users/lperng/LMS/LMS/src/__tests__/multitenancy
-- [ ] T116 Implement AI safety and content validation testing in /Users/lperng/LMS/LMS/src/__tests__/ai
-- [ ] T117 Add performance testing and load testing in /Users/lperng/LMS/LMS/src/__tests__/performance
-- [ ] T118 Implement security testing and vulnerability scanning in /Users/lperng/LMS/LMS/src/__tests__/security
-- [ ] T119 Add documentation generation and API documentation in /Users/lperng/LMS/LMS/docs
-- [ ] T120 Implement deployment configuration and CI/CD pipeline in /Users/lperng/LMS/LMS/.github/workflows
+### Critical Dependencies
+- Database schema (T009-T021) must complete before any user story phases
+- Authentication system (T029-T033) required for all user stories
+- Multi-tenant infrastructure (T022-T028) blocks all user stories
+- AI service interface (T078-T083) required for US3 and US4
 
 ## Parallel Execution Opportunities
 
-### Phase 3 (US1) - Super-Admin
-- T021, T022, T023 can be developed in parallel (model, service, component)
-- T025, T026, T027 can be developed in parallel (dashboard, service, API)
-- T028, T029, T030 can be developed in parallel (metrics, dashboard, middleware)
+### Phase 1 Parallel Tasks
+- T005, T006, T007, T008 (Infrastructure setup)
+- T019, T020, T021 (Database optimization)
 
-### Phase 4 (US2) - Organization Admin
-- T036, T037, T038 can be developed in parallel (group model, service, branding)
-- T040, T041, T042 can be developed in parallel (invitation form, service, group management)
-- T044, T045, T046 can be developed in parallel (profile components and services)
+### Phase 2 Parallel Tasks
+- T032, T033 (Authentication APIs)
+- T036, T037 (Database utilities)
+- T040 (Email queue)
 
-### Phase 5 (US3) - Mentor
-- T056, T057, T058 can be developed in parallel (course, lesson, quiz models)
-- T060, T061, T062 can be developed in parallel (course builder, API, lesson editor)
-- T066, T067, T068 can be developed in parallel (AI components and services)
+### Phase 3 Parallel Tasks
+- T044, T045 (Organization service)
+- T048, T049 (User service)
+- T051, T052 (Health monitoring)
 
-### Phase 6 (US4) - Learner
-- T081, T082, T083 can be developed in parallel (enrollment, badge models)
-- T085, T086, T087 can be developed in parallel (catalog, enrollment API, lesson viewer)
-- T093, T094, T095 can be developed in parallel (motivation components and services)
+### Phase 4 Parallel Tasks
+- T056, T057 (Theming system)
+- T061, T062 (Invitation service)
+- T065, T066 (Group management)
 
-## Task Summary
+### Phase 5 Parallel Tasks
+- T070, T071 (Course service)
+- T076, T077 (Content service)
+- T082, T083 (AI approval workflow)
 
-**Total Tasks:** 120
-- **Phase 1 (Setup):** 10 tasks
-- **Phase 2 (Foundational):** 10 tasks  
-- **Phase 3 (US1 - Super-Admin):** 15 tasks
-- **Phase 4 (US2 - Organization Admin):** 20 tasks
-- **Phase 5 (US3 - Mentor):** 25 tasks
-- **Phase 6 (US4 - Learner):** 25 tasks
-- **Phase 7 (Polish):** 15 tasks
+### Phase 6 Parallel Tasks
+- T088, T089 (Enrollment service)
+- T093, T094 (Coaching service)
+- T099, T100 (Motivation service)
 
-**Parallel Opportunities:** 12 identified parallel execution groups across all phases
+### Phase 7 Parallel Tasks
+- T104, T105 (Profile service)
 
-**MVP Scope:** Complete US1 (Super-Admin) and US2 (Organization Admin) for initial deployment, then incrementally add US3 (Mentor) and US4 (Learner) features.
+### Phase 8 Parallel Tasks
+- T108, T109 (GDPR compliance)
+- T112, T113 (Performance optimization)
+- T116, T117 (Testing infrastructure)
+- T120, T121 (Documentation)
+- T124, T125 (Deployment)
+
+## Independent Test Criteria
+
+### US1: Super-Admin Setup
+- Super-admin can create organization with unique slug
+- Organization data is properly isolated with RLS
+- First admin can be assigned and receives invitation
+- Platform health metrics are accessible and accurate
+
+### US2: Organization Admin Management
+- Admin can configure branding and theme independently
+- User invitations are sent via Resend and tracked
+- Groups can be created and managed within organization
+- All operations respect organization boundaries
+
+### US3: Mentor Content Creation
+- Mentors can create courses with lessons and quizzes
+- AI content generation works with approval workflow
+- Content is properly validated and stored
+- Course lifecycle management functions correctly
+
+### US4: Learner Experience
+- Learners can enroll and progress through courses
+- AI coaching provides relevant suggestions
+- Points and badges are awarded correctly
+- Leaderboard displays accurate rankings
+
+### US5: Profile Management
+- All users can update profile information
+- Password changes are secure and validated
+- Profile updates are reflected across the system
+- Access controls prevent unauthorized changes
+
+## MVP Scope Recommendation
+
+**Phase 1-6 (Weeks 1-10):** Core functionality with US1-US4
+- Complete multi-tenant LMS with AI coaching
+- Full user journey from super-admin setup to learner experience
+- Essential gamification features
+
+**Phase 7-8 (Weeks 11-12):** Polish and production readiness
+- Profile management enhancements
+- Security hardening and performance optimization
+- Comprehensive testing and documentation
+
+This approach delivers a complete, production-ready LMS platform with all three pillars (Core LMS, AI Coaching, Gamification) while maintaining focus on MVP scope and incremental delivery.
